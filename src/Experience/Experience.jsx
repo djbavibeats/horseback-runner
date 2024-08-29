@@ -270,7 +270,7 @@ const Horse = ({ app }) => {
             animationSpeed={ 0.25 } 
             isPlaying={ true } 
             scale={ 0.55 }
-            y={ 185 }
+            y={ 190 }
             x={ 10 }
             textures={ textureArray } 
         />
