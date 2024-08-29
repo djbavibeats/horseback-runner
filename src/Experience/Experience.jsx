@@ -282,8 +282,8 @@ const Game = () => {
     return (<>
         <BackgroundSprites />
         <CloudSprites />
-        <Horse app={ app } />
         <SaguaroSprites />
+        <Horse app={ app } />
     </>)
 
 }
