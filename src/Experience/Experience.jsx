@@ -206,8 +206,8 @@ const SaguaroSprite = ({ id, factor, position, saguaros, setSaguaros }) => {
             ref={ saguaro }
             image={ Saguaro }
             x={ 768 }
-            y={ Math.sin(factor) * 10.0 + 170 }
-            scale={ 1.25 } 
+            y={ Math.sin(factor) * 10.0 + 180 }
+            scale={ 1 } 
         />
     )
 }
@@ -269,7 +269,7 @@ const Horse = ({ app }) => {
         <AnimatedSprite 
             animationSpeed={ 0.25 } 
             isPlaying={ true } 
-            scale={ 0.65 }
+            scale={ 0.55 }
             y={ 185 }
             x={ 10 }
             textures={ textureArray } 
