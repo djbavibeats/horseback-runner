@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react"
-import { Stage, Container, TilingSprite, Sprite, Text, useTick } from "@pixi/react"
+import { useRef, useState, useEffect, useReducer } from "react"
+import { Stage, Container, TilingSprite, Sprite, useApp, AnimatedSprite, Text, useTick } from "@pixi/react"
 import * as PIXI from "pixi.js"
 
 // Load in background textures
@@ -20,6 +20,9 @@ import Cloud3 from "../../public/cloud-3.png"
 import Cloud4 from "../../public/cloud-4.png"
 import Cloud5 from "../../public/cloud-5.png"
 
+import Saguaro from "../../public/saguaro.png"
+
+const overallspeed = 2.0 
 const BackgroundSprites = () => {
     const dirtground = useRef()
     const wirefence = useRef()
@@ -29,12 +32,12 @@ const BackgroundSprites = () => {
     const mountains4 = useRef()
 
     useTick(delta => {
-        dirtground.current.tilePosition.x -= 1.0
-        wirefence.current.tilePosition.x -= 1.0
-        mountains1.current.tilePosition.x -= 0.9
-        mountains2.current.tilePosition.x -= 0.8
-        mountains3.current.tilePosition.x -= 0.7
-        mountains4.current.tilePosition.x -= 0.6
+        dirtground.current.tilePosition.x -= 1.0 * overallspeed
+        wirefence.current.tilePosition.x -= 1.0 * overallspeed
+        mountains1.current.tilePosition.x -= 0.9 * overallspeed
+        mountains2.current.tilePosition.x -= 0.8 * overallspeed
+        mountains3.current.tilePosition.x -= 0.7 * overallspeed
+        mountains4.current.tilePosition.x -= 0.6 * overallspeed
     })
 
     return (<>
@@ -96,7 +99,7 @@ let xOffset = 768
 let speedItUp = 1.0
 let loopOffset = 100.0
 
-const Clouds = () => {
+const CloudSprites = () => {
     const cloud1 = useRef()
     const cloud2 = useRef()
     const cloud3 = useRef()
@@ -115,31 +118,31 @@ const Clouds = () => {
         if (cloud1.current.position.x >= 768.0) {
             cloud1.current.position.x = -120.0 - loopOffset
         } else {
-            cloud1.current.position.x += 0.210 * speedItUp
+            cloud1.current.position.x += 0.210 * speedItUp * overallspeed
         }
 
         if (cloud2.current.position.x >= 768.0) {
             cloud2.current.position.x = -98.0 - loopOffset
         } else {
-            cloud2.current.position.x += 0.125 * speedItUp
+            cloud2.current.position.x += 0.125 * speedItUp * overallspeed
         }
 
         if (cloud3.current.position.x >= 768.0) {
             cloud3.current.position.x = -120.0 - loopOffset
         } else { 
-            cloud3.current.position.x += 0.150 * speedItUp
+            cloud3.current.position.x += 0.150 * speedItUp * overallspeed
         }
 
         if (cloud4.current.position.x >= 768.0) {
             cloud4.current.position.x = -118.0 - loopOffset
         } else {
-            cloud4.current.position.x += 0.200 * speedItUp
+            cloud4.current.position.x += 0.200 * speedItUp * overallspeed
         }
 
         if (cloud5.current.position.x >= 768.0) {
             cloud5.current.position.x = -96.0 - loopOffset
         } else {
-            cloud5.current.position.x += 0.100 * speedItUp
+            cloud5.current.position.x += 0.100 * speedItUp * overallspeed
         }
 
     })
@@ -176,19 +179,119 @@ const Clouds = () => {
             y={ 100 }
         />
     </>)
-
 }
-const Experience = () => {
-    const stage = useRef()
-    // const container = useRef()
+
+const SaguaroSprite = ({ id, factor, position, saguaros, setSaguaros }) => {
+    const saguaro = useRef() 
+    const [ remove, setRemove ] = useState(false)
+    
+    useTick(delta => {
+        saguaro.current.position.x -= 1.0 * overallspeed
+        if (saguaro.current.position.x < -50.0) {
+            setRemove(true)
+        }
+    })
 
     useEffect(() => {
-        console.log(stage.current)
-        console.log(PIXI)
-    }, [])
+        if (remove === true) {
+            console.log('time to remove saguaro #' + id)
+        } else {
+            console.log(factor)
+        }
+    }, [ remove ])
 
     return (
+        <Sprite 
+            id={ id }
+            ref={ saguaro }
+            image={ Saguaro }
+            x={ 768 }
+            y={ Math.sin(factor) * 10.0 + 170 }
+            scale={ 1.25 } 
+        />
+    )
+}
 
+let elapsedtime = 0
+let last = 0
+let num = 0
+let speed = 15
+const SaguaroSprites = () => {
+    // const [ saguaros, dispatch ] = useReducer(saguarosReducer, initialSaguaros)
+    const [ saguaros, setSaguaros ] = useState([])
+
+    useTick(delta => {
+        elapsedtime += delta / 10
+        if (elapsedtime - last >= speed) {
+            last = elapsedtime
+            num++
+            setSaguaros([
+                ...saguaros,
+                { id: num, factor: Math.random() * 3.0 }
+            ])
+            console.log(saguaros)
+        }
+    })
+
+    return saguaros.map((saguaro, index) => {
+        return <SaguaroSprite key={ index } id={ saguaro.id } factor={ saguaro.factor } saguaros={ saguaros } setSaguaros={ setSaguaros } />
+    })
+}
+
+import Walk1 from "../../public/horse/walk/frame-1.png"
+import Walk2 from "../../public/horse/walk/frame-2.png"
+import Walk3 from "../../public/horse/walk/frame-3.png"
+import Walk4 from "../../public/horse/walk/frame-4.png"
+import Walk5 from "../../public/horse/walk/frame-5.png"
+import Walk6 from "../../public/horse/walk/frame-6.png"
+
+
+
+
+
+const Horse = ({ app }) => {
+    const [ frames, setFrames ] = useState([])
+ 
+    let walkFrames = [ Walk1, Walk2, Walk3, Walk4, Walk5, Walk6 ]
+    let textureArray = []
+    
+    for (let i = 0; i < 6; i++) {
+        let texture = PIXI.Texture.from(walkFrames[i])
+        textureArray.push(texture)
+    }
+
+    useEffect(() => {
+        console.log(app)
+        
+    }, [])
+
+    return (<>
+        <AnimatedSprite 
+            animationSpeed={ 0.25 } 
+            isPlaying={ true } 
+            scale={ 0.65 }
+            y={ 185 }
+            x={ 10 }
+            textures={ textureArray } 
+        />
+    </>)
+}
+const Game = () => {
+    const app = useApp()
+
+    return (<>
+        <BackgroundSprites />
+        <CloudSprites />
+        <Horse app={ app } />
+        <SaguaroSprites />
+    </>)
+
+}
+
+const Experience = () => {
+    const stage = useRef()   
+
+    return (
         /* PIXI.Application object */
         <Stage 
             ref={ stage }
@@ -196,11 +299,7 @@ const Experience = () => {
             height={ 256 } 
             options={{ backgroundColor: 0xafb9ca }}
         >
-            <BackgroundSprites />
-            <Clouds />
-            {/* <Container ref={ container }>
-
-            </Container> */}
+            <Game />
 
         </Stage>
     )
