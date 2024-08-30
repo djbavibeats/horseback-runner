@@ -1,4 +1,5 @@
 import Experience from "./Experience/Experience"
+import Vanilla from "./Experience/Vanilla.jsx"
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
           Horseback Runner
         </h1>
         <div className="border-4 border-slate-500">
-          <Experience />
+          {/* <Experience /> */}
+          <Vanilla />
         </div>
       </div>
     </>

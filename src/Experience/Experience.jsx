@@ -12,7 +12,7 @@ import Mountains1 from "../../public/mountains-1.png"
 import Mountains2 from "../../public/mountains-2.png"
 import Mountains3 from "../../public/mountains-3.png"
 import Mountains4 from "../../public/mountains-4.png"
-import DirtGround from "../../public/dirt-ground.png"
+import DirtGround from "../../public/dirt.png"
 
 import Cloud1 from "../../public/cloud-1.png"
 import Cloud2 from "../../public/cloud-2.png"
@@ -185,6 +185,11 @@ const SaguaroSprite = ({ id, factor, position, saguaros, setSaguaros }) => {
     const saguaro = useRef() 
     const [ remove, setRemove ] = useState(false)
     
+    useEffect(() => {
+        console.log('new saguaro!')
+        console.log(saguaro.current.getBounds())
+    }, [])
+
     useTick(delta => {
         saguaro.current.position.x -= 1.0 * overallspeed
         if (saguaro.current.position.x < -50.0) {
@@ -192,13 +197,13 @@ const SaguaroSprite = ({ id, factor, position, saguaros, setSaguaros }) => {
         }
     })
 
-    useEffect(() => {
-        if (remove === true) {
-            console.log('time to remove saguaro #' + id)
-        } else {
-            console.log(factor)
-        }
-    }, [ remove ])
+    // useEffect(() => {
+    //     if (remove === true) {
+    //         console.log('time to remove saguaro #' + id)
+    //     } else {
+    //         console.log(factor)
+    //     }
+    // }, [ remove ])
 
     return (
         <Sprite 
@@ -229,7 +234,6 @@ const SaguaroSprites = () => {
                 ...saguaros,
                 { id: num, factor: Math.random() * 3.0 }
             ])
-            console.log(saguaros)
         }
     })
 
@@ -244,10 +248,6 @@ import Walk3 from "../../public/horse/walk/frame-3.png"
 import Walk4 from "../../public/horse/walk/frame-4.png"
 import Walk5 from "../../public/horse/walk/frame-5.png"
 import Walk6 from "../../public/horse/walk/frame-6.png"
-
-
-
-
 
 const Horse = ({ app }) => {
     const [ frames, setFrames ] = useState([])
@@ -276,6 +276,11 @@ const Horse = ({ app }) => {
         />
     </>)
 }
+
+const Line = () => {
+    
+}
+
 const Game = () => {
     const app = useApp()
 
@@ -287,6 +292,8 @@ const Game = () => {
     </>)
 
 }
+
+
 
 const Experience = () => {
     const stage = useRef()   
