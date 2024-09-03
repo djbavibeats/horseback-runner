@@ -17,32 +17,25 @@ const Vanilla = () => {
         domElement.current.appendChild(app.canvas)
 
         // Load in assets
-        Assets.add({ alias: 'Sunset', src: '/background.png' })
-        Assets.add({ alias: 'Dirt', src: '/dirt.png' })
-        Assets.add({ alias: 'WireFence', src: '/wire-fence.png' })
-        Assets.add({ alias: 'Mountains1', src: '/mountains-1.png' })
-        Assets.add({ alias: 'Mountains2', src: '/mountains-2.png' })
-        Assets.add({ alias: 'Mountains3', src: '/mountains-3.png' })
-        Assets.add({ alias: 'Mountains4', src: '/mountains-4.png' })
-        Assets.add({ alias: 'Cloud1', src: '/cloud-1.png' })
-        Assets.add({ alias: 'Cloud2', src: '/cloud-2.png' })
-        Assets.add({ alias: 'Cloud3', src: '/cloud-3.png' })
-        Assets.add({ alias: 'Cloud4', src: '/cloud-4.png' })
-        Assets.add({ alias: 'Cloud5', src: '/cloud-5.png' })
-        Assets.add({ alias: 'WalkFrame1', src: '/horse/walk/frame-1.png' })
-        Assets.add({ alias: 'WalkFrame2', src: '/horse/walk/frame-2.png' })
-        Assets.add({ alias: 'WalkFrame3', src: '/horse/walk/frame-3.png' })
-        Assets.add({ alias: 'WalkFrame4', src: '/horse/walk/frame-4.png' })
-        Assets.add({ alias: 'WalkFrame5', src: '/horse/walk/frame-5.png' })
-        Assets.add({ alias: 'WalkFrame6', src: '/horse/walk/frame-6.png' })
+        Assets.add({ alias: 'Sunset', src: '/game/background.png' })
+        Assets.add({ alias: 'Dirt', src: '/game/dirt.png' })
+        Assets.add({ alias: 'WireFence', src: '/game/wire-fence.png' })
+        Assets.add({ alias: 'Mountains1', src: '/game/mountains/mountains-1.png' })
+        Assets.add({ alias: 'Mountains2', src: '/game/mountains/mountains-2.png' })
+        Assets.add({ alias: 'Mountains3', src: '/game/mountains/mountains-3.png' })
+        Assets.add({ alias: 'Mountains4', src: '/game/mountains/mountains-4.png' })
+        Assets.add({ alias: 'Cloud1', src: '/game/clouds/cloud-1.png' })
+        Assets.add({ alias: 'Cloud2', src: '/game/clouds/cloud-2.png' })
+        Assets.add({ alias: 'Cloud3', src: '/game/clouds/cloud-3.png' })
+        Assets.add({ alias: 'Cloud4', src: '/game/clouds/cloud-4.png' })
+        Assets.add({ alias: 'Cloud5', src: '/game/clouds/cloud-5.png' })
 
         const texturesPromise = Assets.load([ 
             'Sunset', 
             'Dirt',
             'WireFence', 
             'Mountains1', 'Mountains2', 'Mountains3', 'Mountains4',
-            'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5',
-            'WalkFrame1', 'WalkFrame2', 'WalkFrame3', 'WalkFrame4', 'WalkFrame5', 'WalkFrame6'
+            'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5'
         ])
 
         texturesPromise.then((textures) => {
@@ -108,28 +101,6 @@ const Vanilla = () => {
             })
             
             app.stage.addChild(dirt)
-            
-            // Horse
-            const walkFrames = [
-                '/horse/walk/frame-1.png', '/horse/walk/frame-2.png', '/horse/walk/frame-3.png',
-                '/horse/walk/frame-4.png', '/horse/walk/frame-5.png', '/horse/walk/frame-6.png'
-            ]
-
-            const textureArray = []
-            for (let i = 0; i < 6; i++) {
-                const texture = Texture.from(walkFrames[i])
-                textureArray.push(texture)
-            }
-
-            const animatedSprite = new AnimatedSprite(textureArray)
-            animatedSprite.animationSpeed = 0.25
-            animatedSprite.position.y = 190
-            animatedSprite.position.x = 10
-            animatedSprite.scale = 0.55
-            animatedSprite.play()
-
-            app.stage.addChild(animatedSprite)
-            // End Horse
 
             // Animate everything
             let count = 0
@@ -178,34 +149,39 @@ const Vanilla = () => {
     }
 
     const horse = async (app) => {
-        const walkFrames = [
-            '/horse/walk/frame-1.png',
-            '/horse/walk/frame-2.png',
-            '/horse/walk/frame-3.png',
-            '/horse/walk/frame-4.png',
-            '/horse/walk/frame-5.png',
-            '/horse/walk/frame-6.png'
-        ]
-        const textureArray = []
-        Assets.add({ alias: 'Frame1', src: '/horse/walk/frame-1.png' })
-        Assets.add({ alias: 'Frame2', src: '/horse/walk/frame-2.png' })
-        Assets.add({ alias: 'Frame3', src: '/horse/walk/frame-3.png' })
-
+        Assets.add({ alias: 'WalkFrame1', src: '/game/horse/walk/frame-1.png' })
+        Assets.add({ alias: 'WalkFrame2', src: '/game/horse/walk/frame-2.png' })
+        Assets.add({ alias: 'WalkFrame3', src: '/game/horse/walk/frame-3.png' })
+        Assets.add({ alias: 'WalkFrame4', src: '/game/horse/walk/frame-4.png' })
+        Assets.add({ alias: 'WalkFrame5', src: '/game/horse/walk/frame-5.png' })
+        Assets.add({ alias: 'WalkFrame6', src: '/game/horse/walk/frame-6.png' })
+        
         const texturesPromise = Assets.load([ 
-            'Frame1',
-            'Frame2',
-            'Frame3'
+            'WalkFrame1', 'WalkFrame2', 'WalkFrame3',
+            'WalkFrame4', 'WalkFrame5', 'WalkFrame6', 
         ])
+
         texturesPromise.then((textures) => {
-            for (let i = 0; i < 6; i++) {
-                const texture = Texture.from(walkFrames[i])
+            const walkFrames = [
+                '/game/horse/walk/frame-1.png', '/game/horse/walk/frame-2.png', '/game/horse/walk/frame-3.png',
+                '/game/horse/walk/frame-4.png', '/game/horse/walk/frame-5.png', '/game/horse/walk/frame-6.png'
+            ]
+    
+            let textureArray = []
+            for (const frame of walkFrames) {
+                const texture = Texture.from(frame)
                 textureArray.push(texture)
             }
     
             const animatedSprite = new AnimatedSprite(textureArray)
+            animatedSprite.animationSpeed = 0.25
+            animatedSprite.position.y = 190
+            animatedSprite.position.x = 10
+            animatedSprite.scale = 0.55
+            animatedSprite.play()
+    
             app.stage.addChild(animatedSprite)
         })
-
     }
 
     useEffect(() => {
