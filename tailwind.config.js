@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "press-start": '"Press Start 2P"'
+      }
+    },
   },
   plugins: [],
 }
