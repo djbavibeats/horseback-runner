@@ -405,7 +405,7 @@ const Vanilla = () => {
             const interval = setInterval(() => {
                 saguaro()
                 setCurrentId(currentId + 1)
-            }, 5000)
+            }, 4000)
             return () => clearInterval(interval)
         }
     })
