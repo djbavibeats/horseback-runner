@@ -17,24 +17,24 @@ const Vanilla = () => {
         domElement.current.appendChild(app.canvas)
 
         // Load in assets
-        Assets.add({ alias: 'Sunset', src: '../../public/background.png' })
-        Assets.add({ alias: 'Dirt', src: '../../public/dirt.png' })
-        Assets.add({ alias: 'WireFence', src: '../../public/wire-fence.png' })
-        Assets.add({ alias: 'Mountains1', src: '../../public/mountains-1.png' })
-        Assets.add({ alias: 'Mountains2', src: '../../public/mountains-2.png' })
-        Assets.add({ alias: 'Mountains3', src: '../../public/mountains-3.png' })
-        Assets.add({ alias: 'Mountains4', src: '../../public/mountains-4.png' })
-        Assets.add({ alias: 'Cloud1', src: '../../public/cloud-1.png' })
-        Assets.add({ alias: 'Cloud2', src: '../../public/cloud-2.png' })
-        Assets.add({ alias: 'Cloud3', src: '../../public/cloud-3.png' })
-        Assets.add({ alias: 'Cloud4', src: '../../public/cloud-4.png' })
-        Assets.add({ alias: 'Cloud5', src: '../../public/cloud-5.png' })
-        Assets.add({ alias: 'WalkFrame1', src: '../../public/horse/walk/frame-1.png' })
-        Assets.add({ alias: 'WalkFrame2', src: '../../public/horse/walk/frame-2.png' })
-        Assets.add({ alias: 'WalkFrame3', src: '../../public/horse/walk/frame-3.png' })
-        Assets.add({ alias: 'WalkFrame4', src: '../../public/horse/walk/frame-4.png' })
-        Assets.add({ alias: 'WalkFrame5', src: '../../public/horse/walk/frame-5.png' })
-        Assets.add({ alias: 'WalkFrame6', src: '../../public/horse/walk/frame-6.png' })
+        Assets.add({ alias: 'Sunset', src: '/background.png' })
+        Assets.add({ alias: 'Dirt', src: '/dirt.png' })
+        Assets.add({ alias: 'WireFence', src: '/wire-fence.png' })
+        Assets.add({ alias: 'Mountains1', src: '/mountains-1.png' })
+        Assets.add({ alias: 'Mountains2', src: '/mountains-2.png' })
+        Assets.add({ alias: 'Mountains3', src: '/mountains-3.png' })
+        Assets.add({ alias: 'Mountains4', src: '/mountains-4.png' })
+        Assets.add({ alias: 'Cloud1', src: '/cloud-1.png' })
+        Assets.add({ alias: 'Cloud2', src: '/cloud-2.png' })
+        Assets.add({ alias: 'Cloud3', src: '/cloud-3.png' })
+        Assets.add({ alias: 'Cloud4', src: '/cloud-4.png' })
+        Assets.add({ alias: 'Cloud5', src: '/cloud-5.png' })
+        Assets.add({ alias: 'WalkFrame1', src: '/horse/walk/frame-1.png' })
+        Assets.add({ alias: 'WalkFrame2', src: '/horse/walk/frame-2.png' })
+        Assets.add({ alias: 'WalkFrame3', src: '/horse/walk/frame-3.png' })
+        Assets.add({ alias: 'WalkFrame4', src: '/horse/walk/frame-4.png' })
+        Assets.add({ alias: 'WalkFrame5', src: '/horse/walk/frame-5.png' })
+        Assets.add({ alias: 'WalkFrame6', src: '/horse/walk/frame-6.png' })
 
         const texturesPromise = Assets.load([ 
             'Sunset', 
@@ -111,8 +111,8 @@ const Vanilla = () => {
             
             // Horse
             const walkFrames = [
-                '../../public/horse/walk/frame-1.png', '../../public/horse/walk/frame-2.png', '../../public/horse/walk/frame-3.png',
-                '../../public/horse/walk/frame-4.png', '../../public/horse/walk/frame-5.png', '../../public/horse/walk/frame-6.png'
+                '/horse/walk/frame-1.png', '/horse/walk/frame-2.png', '/horse/walk/frame-3.png',
+                '/horse/walk/frame-4.png', '/horse/walk/frame-5.png', '/horse/walk/frame-6.png'
             ]
 
             const textureArray = []
@@ -127,7 +127,7 @@ const Vanilla = () => {
             animatedSprite.position.x = 10
             animatedSprite.scale = 0.55
             animatedSprite.play()
-            
+
             app.stage.addChild(animatedSprite)
             // End Horse
 
@@ -179,17 +179,17 @@ const Vanilla = () => {
 
     const horse = async (app) => {
         const walkFrames = [
-            '../../public/horse/walk/frame-1.png',
-            '../../public/horse/walk/frame-2.png',
-            '../../public/horse/walk/frame-3.png',
-            '../../public/horse/walk/frame-4.png',
-            '../../public/horse/walk/frame-5.png',
-            '../../public/horse/walk/frame-6.png'
+            '/horse/walk/frame-1.png',
+            '/horse/walk/frame-2.png',
+            '/horse/walk/frame-3.png',
+            '/horse/walk/frame-4.png',
+            '/horse/walk/frame-5.png',
+            '/horse/walk/frame-6.png'
         ]
         const textureArray = []
-        Assets.add({ alias: 'Frame1', src: '../../public/horse/walk/frame-1.png' })
-        Assets.add({ alias: 'Frame2', src: '../../public/horse/walk/frame-2.png' })
-        Assets.add({ alias: 'Frame3', src: '../../public/horse/walk/frame-3.png' })
+        Assets.add({ alias: 'Frame1', src: '/horse/walk/frame-1.png' })
+        Assets.add({ alias: 'Frame2', src: '/horse/walk/frame-2.png' })
+        Assets.add({ alias: 'Frame3', src: '/horse/walk/frame-3.png' })
 
         const texturesPromise = Assets.load([ 
             'Frame1',
