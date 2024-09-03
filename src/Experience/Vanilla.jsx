@@ -29,14 +29,22 @@ const Vanilla = () => {
         Assets.add({ alias: 'Cloud3', src: '../../public/cloud-3.png' })
         Assets.add({ alias: 'Cloud4', src: '../../public/cloud-4.png' })
         Assets.add({ alias: 'Cloud5', src: '../../public/cloud-5.png' })
+        Assets.add({ alias: 'WalkFrame1', src: '../../public/horse/walk/frame-1.png' })
+        Assets.add({ alias: 'WalkFrame2', src: '../../public/horse/walk/frame-2.png' })
+        Assets.add({ alias: 'WalkFrame3', src: '../../public/horse/walk/frame-3.png' })
+        Assets.add({ alias: 'WalkFrame4', src: '../../public/horse/walk/frame-4.png' })
+        Assets.add({ alias: 'WalkFrame5', src: '../../public/horse/walk/frame-5.png' })
+        Assets.add({ alias: 'WalkFrame6', src: '../../public/horse/walk/frame-6.png' })
 
         const texturesPromise = Assets.load([ 
             'Sunset', 
             'Dirt',
             'WireFence', 
             'Mountains1', 'Mountains2', 'Mountains3', 'Mountains4',
-            'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5'
+            'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5',
+            'WalkFrame1', 'WalkFrame2', 'WalkFrame3', 'WalkFrame4', 'WalkFrame5', 'WalkFrame6'
         ])
+
         texturesPromise.then((textures) => {
             // Sunset Background
             const sunset = new Sprite({
@@ -103,43 +111,24 @@ const Vanilla = () => {
             
             // Horse
             const walkFrames = [
-                '../../public/horse/walk/frame-1.png',
-                '../../public/horse/walk/frame-2.png',
-                '../../public/horse/walk/frame-3.png',
-                '../../public/horse/walk/frame-4.png',
-                '../../public/horse/walk/frame-5.png',
-                '../../public/horse/walk/frame-6.png'
+                '../../public/horse/walk/frame-1.png', '../../public/horse/walk/frame-2.png', '../../public/horse/walk/frame-3.png',
+                '../../public/horse/walk/frame-4.png', '../../public/horse/walk/frame-5.png', '../../public/horse/walk/frame-6.png'
             ]
+
             const textureArray = []
-            Assets.add({ alias: 'Frame1', src: '../../public/horse/walk/frame-1.png' })
-            Assets.add({ alias: 'Frame2', src: '../../public/horse/walk/frame-2.png' })
-            Assets.add({ alias: 'Frame3', src: '../../public/horse/walk/frame-3.png' })
-            Assets.add({ alias: 'Frame4', src: '../../public/horse/walk/frame-4.png' })
-            Assets.add({ alias: 'Frame5', src: '../../public/horse/walk/frame-5.png' })
-            Assets.add({ alias: 'Frame6', src: '../../public/horse/walk/frame-6.png' })
-    
-            const texturesPromise = Assets.load([ 
-                'Frame1',
-                'Frame2',
-                'Frame3',
-                'Frame4',
-                'Frame5',
-                'Frame6'
-            ])
-            texturesPromise.then((textures) => {
-                for (let i = 0; i < 6; i++) {
-                    const texture = Texture.from(walkFrames[i])
-                    textureArray.push(texture)
-                }
-        
-                const animatedSprite = new AnimatedSprite(textureArray)
-                animatedSprite.animationSpeed = 0.25
-                animatedSprite.position.y = 190
-                animatedSprite.position.x = 10
-                animatedSprite.scale = 0.55
-                animatedSprite.play()
-                app.stage.addChild(animatedSprite)
-            })
+            for (let i = 0; i < 6; i++) {
+                const texture = Texture.from(walkFrames[i])
+                textureArray.push(texture)
+            }
+
+            const animatedSprite = new AnimatedSprite(textureArray)
+            animatedSprite.animationSpeed = 0.25
+            animatedSprite.position.y = 190
+            animatedSprite.position.x = 10
+            animatedSprite.scale = 0.55
+            animatedSprite.play()
+            
+            app.stage.addChild(animatedSprite)
             // End Horse
 
             // Animate everything

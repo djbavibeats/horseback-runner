@@ -1,4 +1,4 @@
-import Experience from "./Experience/Experience"
+// import Experience from "./Experience/Experience"
 import Vanilla from "./Experience/Vanilla.jsx"
 
 function App() {
