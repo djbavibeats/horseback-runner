@@ -63,7 +63,7 @@ body {
     position: relative;
     background-image: url('/public/images/game/label-and-dialogue-box.webp');
     aspect-ratio: 1650 / 730;
-    width: 340px;
+    width: 327.59398px;
     /* width: 307px; */
     background-repeat: no-repeat;
     background-size: contain;
@@ -91,7 +91,7 @@ body {
     /* width: 660px; */
     z-index: 1;
     
-    width: 340px;
+    width: 327.59398px;
     /* width: 307px; */
 }
 
@@ -102,12 +102,12 @@ body {
 
 @media screen and (min-width: 768px) {
     .game-border {
-        width: 439px;
+        width: 422.872174px;
     }
 
     .game {
         aspect-ratio: 1650 / 1330;
-        width: 429px;
+        width: 412.872174px;
         height: 100%;
         background: black;
     }
@@ -115,12 +115,12 @@ body {
 
 @media screen and (min-width: 1024px) {
     .game-border {
-        width: 505px;
+        width: 486.39097px;
     }
 
     .game {
         aspect-ratio: 1650 / 1330;
-        width: 495px;
+        width: 476.39097px;
         height: 100%;
         background: black;
     }
@@ -129,17 +129,17 @@ body {
 /* Experience Wrapper */
 .experience-wrapper {
     /* max-width: 307px; */
-    max-width: 340px;
+    max-width: 327.59398px;
 }
 
 @media screen and (min-width: 768px) {
     .experience-wrapper {
-        max-width: 439px;
+        max-width: 422.872174px;
     }
 }
 
 @media screen and (min-width: 1024px) {
     .experience-wrapper {
-        max-width: 505px;
+        max-width: 486.39097px;
     }
 }
