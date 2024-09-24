@@ -109,7 +109,6 @@ body {
         aspect-ratio: 1650 / 1330;
         width: 412.872174px;
         height: 100%;
-        background: black;
     }
 } 
 
@@ -122,7 +121,6 @@ body {
         aspect-ratio: 1650 / 1330;
         width: 476.39097px;
         height: 100%;
-        background: black;
     }
 }
 
@@ -141,5 +139,50 @@ body {
 @media screen and (min-width: 1024px) {
     .experience-wrapper {
         max-width: 486.39097px;
+    }
+}
+
+/* Leaderboard Modal */
+.leaderboard-modal {
+    /* max-width: 307px; */
+    height: 256px;
+    width: 317.59398px;
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+}
+
+.leaderboard-modal-content {
+    background-image: url('/public/images/game/high-score-panel.webp');
+    aspect-ratio: 1430 / 1108;
+    height: 90%;
+    /* width: 90%; */
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.leaderboard-modal-content * {
+    line-height: 1.3rem;
+}
+
+@media screen and (min-width: 768px) {
+    .leaderboard-modal {
+        height: 332.8px;
+        width: 412.872174px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .leaderboard-modal {
+        height: 384px;
+        width: 476.39097px;
     }
 }

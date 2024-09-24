@@ -58,6 +58,8 @@ function InstructionsPage({ responsiveFactor }) {
     const [ app, setApp ] = useState( new Application() ) 
     const [ gameWidth, setGameWidth ] = useState(317.59398 * responsiveFactor)
     const [ gameHeight, setGameHeight ] = useState(256 * responsiveFactor)
+    const [ scorePoints, setScorePoints ] = useState(0)
+    const [ scoreTime, setScoreTime ] = useState(0.0)
 
     const sound = useRef(new Howl({
         src: [ '/audio/horseback-jenna-paulette.mp3' ]
@@ -251,6 +253,8 @@ function InstructionsPage({ responsiveFactor }) {
     let jumpDuration = 2.0
     let floatDuration = 1.25
 
+    // Scoreboard
+
     const gameLoop = () => {
         const currentTime = Date.now()
         const deltaTime = currentTime - time
@@ -341,50 +345,137 @@ function InstructionsPage({ responsiveFactor }) {
             case 1:
                 setInstructionsStep(2)
                 sound.current.play()
-                toStartingPositions()
+                // toStartingPositions()
+                gameInProgress = true
+                break
+            case 3:
+                console.log("my turn")
                 break
             default:
                 break
         }
     }
 
+    const intervalRef = useRef()
+
+    useEffect(() => {
+        if (instructionsStep === 2) {
+            console.log("Start the timer")
+            setScoreTime(0)
+            setScorePoints(0)
+            const id = setInterval(() => {
+                setScoreTime(st => st + 1)
+            }, 1000)
+            intervalRef.current = id
+            return () => {
+                clearInterval(intervalRef.current)
+            }
+        } else if (instructionsStep === 3) {
+            console.log("Stop the timer")
+            clearInterval(intervalRef.current)
+        }
+    }, [ instructionsStep ])
+
+    useEffect(() => {
+        if (scoreTime === 212) {
+            setInstructionsStep(3)
+            console.log("You win!")
+        }
+    }, [scoreTime ])
+
     const jump = () => {
         if (horse.current.jumpState === 'idle') {
             horse.current.jumpState = 'ascend'
+            setScorePoints(scorePoints + 1.0)
         }
-
     }
 
-    const toStartingPositions = () => {
-        gameInProgress = true
+    const restartGame = () => {
+        setInstructionsStep(2)
     }
+
+    const streamLink = () => {
+        alert("Stream")
+    }
+
+    const shareLink = () => {
+        alert("Share")
+    }
+
+    useEffect(() => {
+        // if (gameInProgress = true) {
+        // }
+    }, [ ])
+
 
     return (
         <>
         <div className="relative flex flex-col items-center gap-2">
             <div className="absolute game-border" />
+            <div className="absolute scorebox top-4 right-4 w-[80px]">
+                <div className="flex justify-between">
+                    <p className="font-snide-asides text-xl">Time</p>
+                    <p className="font-snide-asides text-xl">{ scoreTime }</p>
+                </div>
+                <div className="flex justify-between">
+                    <p className="font-snide-asides text-xl">Points</p>
+                    <p className="font-snide-asides text-xl">{ scorePoints }</p>
+                </div>
+            </div>
             <div className="game" ref={ domElement } />
             {/* <TheGame gameInProgress={ gameInProgress } setGameInProgress={ setGameInProgress } /> */}
-            { instructionsStep !== 2 && <>
-            
-                <div className="dialogue-box font-snide-asides">
-                    <img className="jenna-sprite" src={ JennaSpirte } />
-                    { instructionsStep === 0 && <>
-                        <p className="mb-2">Hey y'all!</p>
-                        <p>Country music's favorite cowgirl Jenna Paulette here. Jump over some stuff and win a pair of Justin Boots, ya hear? Make it to the end of my new single "Horseback" to be entered to win!</p>
-                    </> }
-                    { instructionsStep === 1 && <>
-                        <p className="mt-4">Hit the spacebar or jump button to control the horse. Turn up the volume, watch out for cactus and grab as many coins as you can. Have fun!</p>
-                    </> }
-                </div>
-                <div className="special-button w-[120px] mt-0 animate-bounce" onClick={ () => advanceStep() }>
-                    <p className="font-snide-asides text-2xl">{ instructionsStep === 0 ? 'Next' : 'Start!' }</p>
-                </div>
+            { instructionsStep < 2 && <>
+            <div className="dialogue-box font-snide-asides">
+                <img className="jenna-sprite" src={ JennaSpirte } />
+                { instructionsStep === 0 && <>
+                    <p className="mb-2">Hey y'all!</p>
+                    <p>Country music's favorite cowgirl Jenna Paulette here. Jump over some stuff and win a pair of Justin Boots, ya hear? Make it to the end of my new single "Horseback" to be entered to win!</p>
+                </> }
+                { instructionsStep === 1 && <>
+                    <p className="mt-4">Hit the spacebar or jump button to control the horse. Turn up the volume, watch out for cactus and grab as many coins as you can. Have fun!</p>
+                </> }
+            </div>
+            <div className="special-button w-[120px] mt-0 animate-bounce" onClick={ () => advanceStep() }>
+                <p className="font-snide-asides text-2xl">{ instructionsStep === 0 ? 'Next' : 'Start!' }</p>
+            </div>
             </> }
             { instructionsStep === 2 && <>
             <div className="min-h-[191.62px]">
-                <div className="special-button w-[200px] mt-8" onClick={ () => jump() }>
-                    <p className="font-snide-asides text-4xl">Jump!</p>
+                <div className="special-button w-[180px] mt-8" onClick={ () => jump() }>
+                    <p className="font-snide-asides text-2xl">Jump!</p>
+                </div>
+            </div>
+            </> }
+            { instructionsStep === 3 && <>
+            <div className={`absolute bg-white leaderboard-modal`}>
+                <div className="leaderboard-modal-content">
+                    <p className="font-snide-asides text-lg">Thanks for playing!</p>
+                    <div className="flex flex-col items-center mb-2">
+                        <p className="font-snide-asides text-lg">Score</p>
+                        <p className="font-snide-asides text-lg">{ scorePoints }</p>
+                    </div>
+                    <div className="flex flex-col items-center mb-2">
+                        <p className="font-snide-asides text-lg">Initials</p>
+                        <p className="font-snide-asides text-lg">ABC</p>
+                    </div>
+                    <div className="flex flex-col items-center mb-0">
+                        <p className="font-snide-asides text-lg">Email</p>
+                        <p className="font-snide-asides text-lg">your@email.com</p>
+                    </div>
+                    <div className="special-button w-[140px] mt-2" onClick={ () => restartGame() }>
+                        <p className="font-snide-asides text-md">View Leaderboard</p>
+                    </div>
+                </div>
+            </div>
+            <div className="min-h-[191.62px]">
+                <div className="special-button w-[180px] mt-2" onClick={ () => streamLink() }>
+                    <p className="font-snide-asides text-2xl">Stream Horseback</p>
+                </div>
+                <div className="special-button w-[180px] mt-2" onClick={ () => shareLink() }>
+                    <p className="font-snide-asides text-2xl">Share</p>
+                </div>
+                <div className="special-button w-[180px] mt-2" onClick={ () => restartGame() }>
+                    <p className="font-snide-asides text-2xl">Play Again?</p>
                 </div>
             </div>
             </> }
