@@ -9,12 +9,123 @@
     font-style: normal;
 }
 
-body {
-    background: url('/public/images/temporary-site-background.png');
-    background-size: cover;
-    background-repeat: no-repeat;
+@font-face {
+    font-family: "Snide Asides";
+    src: url("/fonts/SnideAsides.ttf");
+    font-style: normal;
 }
 
 canvas {
-    border-radius: 1rem;
+}
+
+/* Background Image */
+body {
+    background-color: #68b5df;
+    background-image: url('/public/images/sitewide/mountains-background.webp');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 10rem;
+}
+
+@media screen and (min-width: 768px) {
+    body {
+        background-position: 50% 10rem;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    body {
+        background-position: 50% 50%;
+    }
+}
+
+/* 8-Bit Button Styles */
+.special-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/public/images/sitewide/button-background.webp');
+    background-size: cover;
+    aspect-ratio: 3.1 / 1;
+    transition: all 0.125s ease-in-out;
+}
+
+.special-button:hover {
+    transform: scale(0.95);
+    cursor: pointer;
+}
+.special-button p {
+    margin-top: 0.25rem;
+}
+
+/* Dialogue Box */
+.dialogue-box {
+    position: relative;
+    background-image: url('/public/images/game/label-and-dialogue-box.webp');
+    aspect-ratio: 1650 / 730;
+    width: 340px;
+    /* width: 307px; */
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding: 1.75rem 1rem 0.0rem 1rem;
+}
+
+.dialogue-box p {
+    font-size: 1.05rem;
+    line-height: 1.1rem;
+}
+
+.jenna-sprite {
+    position: absolute;
+    height: 130px;
+    top: -112.5px;
+    z-index: 1;
+}
+/* Game Border Styles */
+.game-border {
+    background-image: url('/public/images/game/rope-border.webp');
+    background-size: contain;
+    background-position: center center;
+    aspect-ratio: 1650 / 1330;
+    background-repeat: no-repeat;
+    /* width: 660px; */
+    z-index: 1;
+    
+    width: 340px;
+    /* width: 307px; */
+}
+
+.game > canvas {
+    border-radius: 5px;
+    padding-top: 5px;
+}
+
+@media screen and (min-width: 768px) {
+    .game-border {
+        width: 439px;
+    }
+} 
+
+@media screen and (min-width: 1024px) {
+    .game-border {
+        width: 505px;
+    }
+}
+
+/* Experience Wrapper */
+.experience-wrapper {
+    /* max-width: 307px; */
+    max-width: 340px;
+}
+
+@media screen and (min-width: 768px) {
+    .experience-wrapper {
+        max-width: 439px;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .experience-wrapper {
+        max-width: 505px;
+    }
 }

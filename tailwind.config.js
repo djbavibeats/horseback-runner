@@ -7,7 +7,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        "press-start": '"Press Start 2P"'
+        "press-start": '"Press Start 2P"',
+        "snide-asides": '"Snide Asides"',
+      },
+      keyframes: {
+        bounce: {
+          '0%, 100%': { 
+            transform: 'translateY(-5%)'
+          },
+        }
+      },
+      animation: {
+        bounce: 'bounce 0.75s ease-in-out infinite'
       }
     },
   },
