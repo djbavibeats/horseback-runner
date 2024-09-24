@@ -26,7 +26,7 @@ function App() {
         }
         { activeScreen === 'instructions' &&
           <div className="relative flex flex-col w-full h-full items-center justify-center gap-4">  
-            <img className="w-[80%] mt-[-1rem]" src={ GameLogo } />
+            <img className="w-[90%] mt-[-1rem]" src={ GameLogo } />
             <InstructionsPage setActiveScreen={ setActiveScreen } />
           </div> 
         }
