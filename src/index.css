@@ -104,11 +104,25 @@ body {
     .game-border {
         width: 439px;
     }
+
+    .game {
+        aspect-ratio: 1650 / 1330;
+        width: 429px;
+        height: 100%;
+        background: black;
+    }
 } 
 
 @media screen and (min-width: 1024px) {
     .game-border {
         width: 505px;
+    }
+
+    .game {
+        aspect-ratio: 1650 / 1330;
+        width: 495px;
+        height: 100%;
+        background: black;
     }
 }
 
