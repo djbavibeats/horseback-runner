@@ -1,31 +1,69 @@
 import { useRef, useState, useEffect } from 'react'
 import { Application, Assets, Texture, Sprite, TilingSprite, AnimatedSprite, Graphics } from 'pixi.js'
+import { Howl } from 'howler'
 
 import JennaSpirte from '../../public/images/game/jenna-sprite.webp'
 
-const responsiveFactor = 1.0
-// Mobile
-// const gameWidth = 317.59398
-// const gameHeight = 256
+function keyboard(value) {
+    const key = {}
+    key.value = value
+    key.isDown = false
+    key.isUp = true
+    key.press = undefined
+    key.release = undefined
 
-// Tablet
-// const gameWidth = 412.872174
-// const gameHeight = 332.8
+    key.downHandler = (event) => {
+        if (event.key === key.value) {
+            if (key.isUp && key.press) {
+                key.press()
+            }
+            key.isDown = true
+            key.isUp = false
+            event.preventDefault()
+        }
+    }
 
-// Desktop
-// const gameWidth = 476.39097
-// const gameHeight = 384
+    key.upHandler = (event) => {
+        if (event.key === key.value) {
+            if (key.isDown && key.release) {
+            key.release()
+            }
+            key.isDown = false
+            key.isUp = true
+            event.preventDefault()
+        }
+    }
+
+    const downListener = key.downHandler.bind(key)
+    const upListener = key.upHandler.bind(key)
+    
+    window.addEventListener("keydown", downListener, false)
+    window.addEventListener("keyup", upListener, false)
+    
+    // Detach event listeners
+    key.unsubscribe = () => {
+        window.removeEventListener("keydown", downListener)
+        window.removeEventListener("keyup", upListener)
+    }
+    
+    return key
+}
 
 let gameInProgress = false
 
-function InstructionsPage() {  
+function InstructionsPage({ responsiveFactor }) {  
     const [ instructionsStep, setInstructionsStep ] = useState(0)
     const domElement = useRef(null)
     const initialized = useRef(false)
     const [ app, setApp ] = useState( new Application() ) 
-    const [ gameWidth, setGameWidth ] = useState(317.59398)
-    const [ gameHeight, setGameHeight ] = useState(256)
+    const [ gameWidth, setGameWidth ] = useState(317.59398 * responsiveFactor)
+    const [ gameHeight, setGameHeight ] = useState(256 * responsiveFactor)
 
+    const sound = useRef(new Howl({
+        src: [ '/audio/horseback-jenna-paulette.mp3' ]
+    }))
+
+    let sunset = useRef(null)
     let mountains1 = useRef(null)
     let mountains2 = useRef(null)
     let mountains3 = useRef(null)
@@ -44,20 +82,8 @@ function InstructionsPage() {
         // Initialize the application
         await app.init({ 
             background: 0x000000, 
-            // Mobile
             width: gameWidth,
             height: gameHeight
-
-            // width: 297,
-            // height: 239.4
-
-            // Tablet (x1.3)
-            // width: 412.872174,
-            // height: 332.8
-
-            // Desktop (x1.5)
-            // width: 476.39097,
-            // height: 384
         })
 
         // Add the application canvas to the DOM element
@@ -96,18 +122,19 @@ function InstructionsPage() {
 
         texturesPromise.then((textures) => {
             // Sunset
-            const sunset = new Sprite({
+            sunset.current = new Sprite({
                 texture: textures.Sunset,
-                height: 256 * responsiveFactor,
-                width: 1024 * responsiveFactor
+                height: 256 * 1.3,
+                width: 1024 * 1.3
             })
-            app.stage.addChild(sunset)
+            app.stage.addChild(sunset.current)
+
             
             // Mountains
-            mountains1.current = new TilingSprite({ texture: textures.Mountains1, height: 256, width: 1024 })
-            mountains2.current = new TilingSprite({ texture: textures.Mountains2, height: 256, width: 1024 })
-            mountains3.current = new TilingSprite({ texture: textures.Mountains3, height: 256, width: 1024 })
-            mountains4.current = new TilingSprite({ texture: textures.Mountains4, height: 256, width: 1024 })
+            mountains1.current = new TilingSprite({ texture: textures.Mountains1, height: 256 * responsiveFactor, width: 1024 * responsiveFactor, tileScale: responsiveFactor })
+            mountains2.current = new TilingSprite({ texture: textures.Mountains2, height: 256 * responsiveFactor, width: 1024 * responsiveFactor, tileScale: responsiveFactor })
+            mountains3.current = new TilingSprite({ texture: textures.Mountains3, height: 256 * responsiveFactor, width: 1024 * responsiveFactor, tileScale: responsiveFactor })
+            mountains4.current = new TilingSprite({ texture: textures.Mountains4, height: 256 * responsiveFactor, width: 1024 * responsiveFactor, tileScale: responsiveFactor })
 
             app.stage.addChild(mountains4.current)
             app.stage.addChild(mountains3.current)
@@ -152,7 +179,8 @@ function InstructionsPage() {
             wireFence.current = new TilingSprite({
                 texture: textures.WireFence,
                 height: 256 * responsiveFactor,
-                width: 1024 * responsiveFactor
+                width: 1024 * responsiveFactor,
+                tileScale: responsiveFactor
             })
             app.stage.addChild(wireFence.current)
 
@@ -160,7 +188,8 @@ function InstructionsPage() {
             dirt.current = new TilingSprite({
                 texture: textures.Dirt,
                 height: 256 * responsiveFactor,
-                width: 1024 * responsiveFactor
+                width: 1024 * responsiveFactor,
+                tileScale: responsiveFactor
             })
             app.stage.addChild(dirt.current)
 
@@ -177,9 +206,9 @@ function InstructionsPage() {
 
             const animatedSprite = new AnimatedSprite(textureArray)
             animatedSprite.animationSpeed = 0.25
-            animatedSprite.position.y = 190
+            animatedSprite.position.y = 190 * responsiveFactor
             animatedSprite.position.x = (gameWidth / 2) - 32
-            animatedSprite.scale = 0.5
+            animatedSprite.scale = 0.5 * responsiveFactor
             animatedSprite.play()
 
             horse.current = animatedSprite
@@ -187,6 +216,16 @@ function InstructionsPage() {
 
             app.stage.addChild(horse.current)  
 
+            // Setup Keyboard
+            const space = keyboard(" ")
+            space.press = () => {
+                if (horse.current.jumpState === 'idle') {
+                    horse.current.jumpState = 'ascend'
+                }
+            }
+            space.release = () => {
+                
+            }
             
         }).then(() => {
             console.log('loaded!')
@@ -253,7 +292,7 @@ function InstructionsPage() {
 
         if (gameInProgress == true) {
             if (horse.current.position.x >= 10) {
-                horse.current.position.x -= 1.0
+                horse.current.position.x -= (1.0 * responsiveFactor)
             } else {
                 // Horse in in position and the game is ready to be played
                 if (horse.current.jumpState === 'ascend') {
@@ -286,7 +325,6 @@ function InstructionsPage() {
     useEffect(() => {
         if (!initialized.current) {
             initialized.current = true
-
             init()
                 .then(() => {
                     console.log('App initialized')
@@ -302,6 +340,7 @@ function InstructionsPage() {
                 break
             case 1:
                 setInstructionsStep(2)
+                sound.current.play()
                 toStartingPositions()
                 break
             default:
@@ -310,7 +349,6 @@ function InstructionsPage() {
     }
 
     const jump = () => {
-        console.log('jump!')
         if (horse.current.jumpState === 'idle') {
             horse.current.jumpState = 'ascend'
         }
@@ -336,7 +374,7 @@ function InstructionsPage() {
                         <p>Country music's favorite cowgirl Jenna Paulette here. Jump over some stuff and win a pair of Justin Boots, ya hear? Make it to the end of my new single "Horseback" to be entered to win!</p>
                     </> }
                     { instructionsStep === 1 && <>
-                        <p className="mt-4">Hit the spacebar or jump button to control the horse. Watch out for cactus and grab as many coins as you can. Have fun!</p>
+                        <p className="mt-4">Hit the spacebar or jump button to control the horse. Turn up the volume, watch out for cactus and grab as many coins as you can. Have fun!</p>
                     </> }
                 </div>
                 <div className="special-button w-[120px] mt-0 animate-bounce" onClick={ () => advanceStep() }>
