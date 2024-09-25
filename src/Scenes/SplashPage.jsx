@@ -6,11 +6,11 @@ function SplashPage({ setActiveScreen }) {
     return (
         <>
         <div className="relative flex flex-col w-full h-full items-center justify-center gap-4">
-            <img className="w-[80%]" src={ JennaPauletteStackedLogo } />
+            <img className="w-[70%]" src={ JennaPauletteStackedLogo } />
             <p className="font-snide-asides text-2xl">And</p>
-            <img className="w-[80%]" src={ JustinBootsLogo } />
+            <img className="w-[70%]" src={ JustinBootsLogo } />
             <p className="font-snide-asides text-2xl">Present</p>
-            <img className="w-[80%]" src={ HorsebackLogo } />
+            <img className="w-[70%]" src={ HorsebackLogo } />
             <div className="special-button w-[170px] mt-2 animate-bounce" onClick={ () => setActiveScreen('instructions')}>
                 <p className="font-snide-asides text-2xl">Click To Begin</p>
             </div>

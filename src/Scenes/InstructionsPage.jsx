@@ -94,12 +94,14 @@ function InstructionsPage({ responsiveFactor }) {
             random = Math.round(Math.random())
             var cactus = new Sprite({
                 texture: random === 0 ? cactusTexture.current : pricklyTexture.current,
-                scale: random === 0 ? 0.0725 * responsiveFactor : 0.09 * responsiveFactor
+                scale: random === 0 ? 0.085 * responsiveFactor : 0.08 * responsiveFactor
             })
             cactus.position.set(
                 gameWidth + 50, 
-                random === 0 ? 195 * responsiveFactor : 200 * responsiveFactor
+                random === 0 ? 190 * responsiveFactor : 204 * responsiveFactor
             )
+            cactus.moving = false
+            cactus.passed = false
             cactusContainer.current.addChild(cactus)
         }
         app.stage.addChild(cactusContainer.current)
@@ -288,7 +290,28 @@ function InstructionsPage({ responsiveFactor }) {
         jumpHeight = 7.5
     }
     let jumpDuration = 2.0
-    let floatDuration = 0.25
+    // let floatDuration = 0.25
+
+    // Mobile
+    let floatDuration, maxHeight, baseHeight
+    let counter = 0.0
+    if (responsiveFactor === 1.0) {
+        baseSpeed = 3.5
+        floatDuration = 12.0
+        maxHeight = 100.0
+        baseHeight = 190.0
+    } else if (responsiveFactor === 1.5) {
+        baseSpeed = 3.5 * responsiveFactor
+        floatDuration = 12.0 / responsiveFactor
+        maxHeight = 100.0 * responsiveFactor
+        baseHeight = 190.0 * responsiveFactor
+    } else if (responsiveFactor === 1.3) {
+        baseSpeed = 3.5 * responsiveFactor
+        floatDuration = 12.0 / responsiveFactor
+        maxHeight = 100.0 * responsiveFactor
+        baseHeight = 190.0 * responsiveFactor
+    }
+
 
     // Scoreboard
     let intervalCount = 0.0
@@ -356,28 +379,46 @@ function InstructionsPage({ responsiveFactor }) {
                 horse.current.position.y = 190 * responsiveFactor
             } else {
                 // Horse in in position and the game is ready to be played
+
+                // If the horse is in the Ascent state
                 if (horse.current.jumpState === 'ascend') {
-                    ascendTimer += 0.1
-                    horse.current.position.y -= jumpHeight
-                    if (ascendTimer >= jumpDuration) {
-                        horse.current.jumpState = 'float'
-                        ascendTimer = 0.0
+
+                    // If the horse has not reached its max height, keep going up
+                    var incrementer = 0.1
+                    if (horse.current.position.y > maxHeight) {
+                        // Decrease this number to speed up the ascent
+                        incrementer += (0.05 / responsiveFactor)
+                        // incrementer += 0.1
+                        horse.current.position.y -= (1.0 / incrementer)
+
+                    // If the horse has reached its max height, briefly pause, then go down
+                    } else {
+                        counter += 1.0
+                        if (counter > floatDuration) {
+                            counter = 0.0
+                            incrementer = 0.1
+                            horse.current.jumpState = 'descend'
+                        } else {
+                            console.log('floating')
+                        }
                     }
                 }
+
+                // If the horse in in the Descent state
                 if (horse.current.jumpState === 'descend') {
-                    descendTimer += 0.1
-                    horse.current.position.y += jumpHeight
-                    if (descendTimer >= jumpDuration) {
+                    
+                    // If the horse has not reached its base height, keep going down
+                    var decrementer = 0.1
+                    if (horse.current.position.y < baseHeight) {
+                        decrementer += 1.0
+                        // Increase first parameter of Math.pow to speed up descent
+                        horse.current.position.y += Math.pow((3.5 * responsiveFactor), decrementer)
+
+                    // If the horse has reached its base height, stay idle
+                    } else {
+                        decrementer = 0.1
                         horse.current.jumpState = 'idle'
-                        descendTimer = 0.0
-                    }
-                }
-                if (horse.current.jumpState === 'float') {
-                    floatTimer += 0.1
-                    if (floatTimer >= floatDuration) {
-                        horse.current.jumpState = 'descend'
-                        floatTimer = 0.0
-                    }
+                    } 
                 }
 
                 if (horse.current.jumpState === 'idle') {
@@ -389,7 +430,6 @@ function InstructionsPage({ responsiveFactor }) {
                 space.current.press = () => {
                     if (horse.current.jumpState === 'idle') {
                         horse.current.jumpState = 'ascend'
-                        setScorePoints(scorePoints => scorePoints + 1.0)
                     }
                 }
                 space.current.release = () => {
@@ -404,86 +444,110 @@ function InstructionsPage({ responsiveFactor }) {
                 if (intervalCount !== currentInterval) {
                     previousInterval = currentInterval
                     currentInterval = intervalCount 
-                    // Phase One
-                    if (cactusCount < 11) {
+                    // Phase One @ 2000
+                    if (cactusCount < 7) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 11) {
+                    } else if (cactusCount === 7) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1875.0
+
+                    // Phase Two @ 1875
+                    } else if (cactusCount > 7 && cactusCount < 16) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 16) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
                         cactusInterval = 1750.0
 
-                    // Phase Two
-                    } else if (cactusCount > 11 && cactusCount < 26) {
+                    // Phase Three @ 1750
+                    } else if (cactusCount > 16 && cactusCount < 28) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 26) {
+                    } else if (cactusCount === 28) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1625.0
+                        // console.log("Speed up #1")
+                        // baseSpeed *= 1.2
+
+                    // Phase Four @ 1625
+                    } else if (cactusCount > 28 && cactusCount < 43) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 43) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
                         cactusInterval = 1500.0
 
-                    // Phase Three
-                    } else if (cactusCount > 26 && cactusCount < 41) {
+                    // Phase Five @ 1500
+                    } else if (cactusCount > 43 && cactusCount < 60) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 41) {
+                    } else if (cactusCount === 60) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1375.0
+
+                    // Phase Six @ 1375
+                    } else if (cactusCount > 60 && cactusCount < 82) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 82) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
                         cactusInterval = 1250.0
+                        // console.log("Speed up #2")
+                        // baseSpeed *= 1.2
 
-                    // Phase Four
-                    } else if (cactusCount > 41 && cactusCount < 61) {
+                    // Phase Seven @ 1250
+                    } else if (cactusCount > 82 && cactusCount < 109) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 61) {
+                    } else if (cactusCount === 109) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
-                        cactusInterval = 1000.0
+                        cactusInterval = 1125.0
 
-                    // Phase Five
-                    } else if (cactusCount > 61 && cactusCount < 91) {
-                        cactusContainer.current.children[cactusCount].moving = true
-                        cactusCount += 1
-                    } else if (cactusCount === 91) {
-                        intervalCount = 0
-                        blah = 0
-                        cactusCount += 1
-                        cactusInterval = 900.0
-
-                    // Phase Six
-                    } else if (cactusCount > 91 && cactusCount < 131) {
+                    // Phase Eight @ 1125
+                    } else if (cactusCount > 109 && cactusCount < 131) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
                     } else if (cactusCount === 131) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
-                        cactusInterval = 850.0
-
-                    // Phase Seven
-                    } else if (cactusCount > 131 && cactusCount < 171) {
+                        cactusInterval = 1000.0
+                    
+                    // Phase Nine @ 1000
+                    } else if (cactusCount > 131 && cactusCount < 148) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 171) {
+                    } else if (cactusCount === 148) {
                         intervalCount = 0
                         blah = 0
                         cactusCount += 1
-                        cactusInterval = 750.0
+                        cactusInterval = 875.0
+                        // console.log("Speed up #3")
+                        // baseSpeed *= 1.2
 
-                    // Phase Eight
-                    } else if (cactusCount > 171 && cactusCount < 200) {
+                    // Phase Ten @ 875
+                    } else if (cactusCount > 148 && cactusCount < 163) {
                         cactusContainer.current.children[cactusCount].moving = true
                         cactusCount += 1
-                    } else if (cactusCount === 200) {
+                    } else if (cactusCount === 163) {
                         intervalCount = 0
                         blah = 0
-                        cactusCount += 1
-                        cactusInterval = 750.0
-                        app.stop()
+                        // app.stop()
                     }
                 }
 
@@ -493,10 +557,16 @@ function InstructionsPage({ responsiveFactor }) {
                     }
                     
                     if (checkBounds(cactusContainer.current.children[c], horse.current)) {
-                        sound.current.stop()
-                        app.stop()
+                        // sound.current.stop()
+                        // app.stop()
 
-                        setInstructionsStep(3)
+                        // setInstructionsStep(3)
+                    }
+
+                    if (cactusContainer.current.children[c].position.x < 0.0 && cactusContainer.current.children[c].passed === false) {
+                        console.log("Cactus passed")
+                        cactusContainer.current.children[c].passed = true
+                        setScorePoints(scorePoints => scorePoints + 10.0)
                     }
                 }
                 // End Cactus Sending Logic
@@ -563,7 +633,6 @@ function InstructionsPage({ responsiveFactor }) {
     const jump = () => {
         if (horse.current.jumpState === 'idle') {
             horse.current.jumpState = 'ascend'
-            setScorePoints(scorePoints => scorePoints + 1.0)
         }
     }
 
