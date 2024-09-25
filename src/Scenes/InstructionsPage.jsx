@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from 'react'
-import { Application, Assets, Texture, Sprite, TilingSprite, AnimatedSprite, Graphics } from 'pixi.js'
+import { useRef, useState, useEffect, useCallback } from 'react'
+import { Application, Assets, Texture, Sprite, TilingSprite, AnimatedSprite, Container } from 'pixi.js'
 import { Howl } from 'howler'
 
 import JennaSpirte from '../../public/images/game/jenna-sprite.webp'
@@ -77,8 +77,33 @@ function InstructionsPage({ responsiveFactor }) {
     let cloud5 = useRef(null)
     let wireFence = useRef(null)
     let dirt = useRef(null)
+
+    let cactusTexture = useRef(null)
+    let pricklyTexture = useRef(null)
+
+    let cactusContainer = useRef(null)
     
-    let horse = useRef(null)
+    let horse = useRef(null)    
+    let space = useRef(null)
+
+    const createCactus = async () => {
+        cactusContainer.current = new Container()
+        var random
+
+        for (var i = 0; i < 200; ++i) {
+            random = Math.round(Math.random())
+            var cactus = new Sprite({
+                texture: random === 0 ? cactusTexture.current : pricklyTexture.current,
+                scale: random === 0 ? 0.0725 * responsiveFactor : 0.09 * responsiveFactor
+            })
+            cactus.position.set(
+                gameWidth + 50, 
+                random === 0 ? 195 * responsiveFactor : 200 * responsiveFactor
+            )
+            cactusContainer.current.addChild(cactus)
+        }
+        app.stage.addChild(cactusContainer.current)
+    }
 
     const init = async () => {
         // Initialize the application
@@ -113,6 +138,13 @@ function InstructionsPage({ responsiveFactor }) {
         Assets.add({ alias: 'WalkFrame5', src: '/images/sprites/horse/walk/frame-5.webp' })
         Assets.add({ alias: 'WalkFrame6', src: '/images/sprites/horse/walk/frame-6.webp' })
 
+        // Cactus
+        Assets.add({ alias: 'Cactus', src: '/images/sprites/cactus.webp' })
+        Assets.add({ alias: 'Prickly', src: '/images/sprites/prickly.webp' })
+
+        // Coin
+        Assets.add({ alias: 'Coin', src: '/images/sprites/coin.webp' })
+
         const texturesPromise = Assets.load([
             'Sunset',
             'Dirt',
@@ -120,6 +152,8 @@ function InstructionsPage({ responsiveFactor }) {
             'Mountains1', 'Mountains2', 'Mountains3', 'Mountains4',
             'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5',
             'WalkFrame1', 'WalkFrame2', 'WalkFrame3', 'WalkFrame4', 'WalkFrame5', 'WalkFrame6', 
+            'Cactus', 'Prickly',
+            'Coin'
         ])
 
         texturesPromise.then((textures) => {
@@ -218,16 +252,10 @@ function InstructionsPage({ responsiveFactor }) {
 
             app.stage.addChild(horse.current)  
 
-            // Setup Keyboard
-            const space = keyboard(" ")
-            space.press = () => {
-                if (horse.current.jumpState === 'idle') {
-                    horse.current.jumpState = 'ascend'
-                }
-            }
-            space.release = () => {
-                
-            }
+            cactusTexture.current = textures.Cactus
+            pricklyTexture.current = textures.Prickly
+
+            createCactus()
             
         }).then(() => {
             console.log('loaded!')
@@ -241,19 +269,47 @@ function InstructionsPage({ responsiveFactor }) {
 
     let count = 0
     let time = Date.now()
-    let baseSpeed = 2.5
+    let baseSpeed = 4.9 * responsiveFactor
     let cloudSpeed = 1.15
     let cloudLoopOffset = 100.0  
+    let timer = 0
 
     // Horse Stuff
     let ascendTimer = 0.0
     let descendTimer = 0.0
     let floatTimer = 0.0
-    let jumpHeight = 4.0
+    let jumpHeight = 7.0
+    if (responsiveFactor === 1) {
+        jumpHeight = 5.0
+    } else if (responsiveFactor === 1.3) {
+        console.log(responsiveFactor)
+        jumpHeight = 6.5
+    } else if (responsiveFactor === 1.5) {
+        jumpHeight = 7.5
+    }
     let jumpDuration = 2.0
-    let floatDuration = 1.25
+    let floatDuration = 0.25
 
     // Scoreboard
+    let intervalCount = 0.0
+    let currentInterval = 0.0
+    let previousInterval = 0.0
+    let cactusInterval = 2000.0
+    let cactusCount = 0
+    let blah = 0
+
+    
+    const checkBounds = (object1, object2) => {
+        const bounds1 = object1.getBounds()
+        const bounds2 = object2.getBounds()
+
+        return (
+            bounds1.x < bounds2.x + bounds2.width
+            && bounds1.x + bounds1.width > bounds2.x
+            && bounds1.y < bounds2.y + bounds2.height
+            && bounds1.y + bounds1.height > bounds2.y
+        )
+    }
 
     const gameLoop = () => {
         const currentTime = Date.now()
@@ -293,10 +349,11 @@ function InstructionsPage({ responsiveFactor }) {
             ? cloud5.current.position.x = -96.0 - cloudLoopOffset
             : cloud5.current.position.x += 0.100 * cloudSpeed
 
-
         if (gameInProgress == true) {
+            // Horse Jumping Logic
             if (horse.current.position.x >= 10) {
                 horse.current.position.x -= (1.0 * responsiveFactor)
+                horse.current.position.y = 190 * responsiveFactor
             } else {
                 // Horse in in position and the game is ready to be played
                 if (horse.current.jumpState === 'ascend') {
@@ -322,12 +379,136 @@ function InstructionsPage({ responsiveFactor }) {
                         floatTimer = 0.0
                     }
                 }
+
+                if (horse.current.jumpState === 'idle') {
+                    horse.current.position.y = 190 * responsiveFactor
+                }
+
+                // Setup Keyboard
+                space.current = keyboard(" ")
+                space.current.press = () => {
+                    if (horse.current.jumpState === 'idle') {
+                        horse.current.jumpState = 'ascend'
+                        setScorePoints(scorePoints => scorePoints + 1.0)
+                    }
+                }
+                space.current.release = () => {
+                    
+                }
+
+                // Cactus Sending Logic
+                intervalCount = Math.floor((blah += app.ticker.elapsedMS) / cactusInterval)
+                if (intervalCount === currentInterval) {
+                    // No need to change the interval now
+                }
+                if (intervalCount !== currentInterval) {
+                    previousInterval = currentInterval
+                    currentInterval = intervalCount 
+                    // Phase One
+                    if (cactusCount < 11) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 11) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1750.0
+
+                    // Phase Two
+                    } else if (cactusCount > 11 && cactusCount < 26) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 26) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1500.0
+
+                    // Phase Three
+                    } else if (cactusCount > 26 && cactusCount < 41) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 41) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1250.0
+
+                    // Phase Four
+                    } else if (cactusCount > 41 && cactusCount < 61) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 61) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 1000.0
+
+                    // Phase Five
+                    } else if (cactusCount > 61 && cactusCount < 91) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 91) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 900.0
+
+                    // Phase Six
+                    } else if (cactusCount > 91 && cactusCount < 131) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 131) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 850.0
+
+                    // Phase Seven
+                    } else if (cactusCount > 131 && cactusCount < 171) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 171) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 750.0
+
+                    // Phase Eight
+                    } else if (cactusCount > 171 && cactusCount < 200) {
+                        cactusContainer.current.children[cactusCount].moving = true
+                        cactusCount += 1
+                    } else if (cactusCount === 200) {
+                        intervalCount = 0
+                        blah = 0
+                        cactusCount += 1
+                        cactusInterval = 750.0
+                        app.stop()
+                    }
+                }
+
+                for (let c = 0; c < cactusContainer.current.children.length; c++) {
+                    if (cactusContainer.current.children[c].moving === true) {
+                        cactusContainer.current.children[c].position.x -= 1.0 * baseSpeed
+                    }
+                    
+                    if (checkBounds(cactusContainer.current.children[c], horse.current)) {
+                        sound.current.stop()
+                        app.stop()
+
+                        setInstructionsStep(3)
+                    }
+                }
+                // End Cactus Sending Logic
+
+
             }
         }
     }
 
     useEffect(() => {
         if (!initialized.current) {
+            console.log("here we go again")
             initialized.current = true
             init()
                 .then(() => {
@@ -345,7 +526,6 @@ function InstructionsPage({ responsiveFactor }) {
             case 1:
                 setInstructionsStep(2)
                 sound.current.play()
-                // toStartingPositions()
                 gameInProgress = true
                 break
             case 3:
@@ -360,18 +540,15 @@ function InstructionsPage({ responsiveFactor }) {
 
     useEffect(() => {
         if (instructionsStep === 2) {
-            console.log("Start the timer")
-            setScoreTime(0)
-            setScorePoints(0)
             const id = setInterval(() => {
                 setScoreTime(st => st + 1)
             }, 1000)
             intervalRef.current = id
+
             return () => {
                 clearInterval(intervalRef.current)
             }
         } else if (instructionsStep === 3) {
-            console.log("Stop the timer")
             clearInterval(intervalRef.current)
         }
     }, [ instructionsStep ])
@@ -386,12 +563,24 @@ function InstructionsPage({ responsiveFactor }) {
     const jump = () => {
         if (horse.current.jumpState === 'idle') {
             horse.current.jumpState = 'ascend'
-            setScorePoints(scorePoints + 1.0)
+            setScorePoints(scorePoints => scorePoints + 1.0)
         }
     }
 
     const restartGame = () => {
-        setInstructionsStep(2)
+        setInstructionsStep(0)
+
+        // Set horse back to position 0
+        horse.current.position.x = (gameWidth / 2) - 32
+        horse.current.position.y = 190 * responsiveFactor
+        setScoreTime(0)
+        setScorePoints(0)
+        gameInProgress = false
+        cactusContainer.current.destroy()
+        createCactus()
+        space.current = null
+
+        app.start()
     }
 
     const streamLink = () => {
@@ -401,12 +590,6 @@ function InstructionsPage({ responsiveFactor }) {
     const shareLink = () => {
         alert("Share")
     }
-
-    useEffect(() => {
-        // if (gameInProgress = true) {
-        // }
-    }, [ ])
-
 
     return (
         <>
@@ -423,7 +606,6 @@ function InstructionsPage({ responsiveFactor }) {
                 </div>
             </div>
             <div className="game" ref={ domElement } />
-            {/* <TheGame gameInProgress={ gameInProgress } setGameInProgress={ setGameInProgress } /> */}
             { instructionsStep < 2 && <>
             <div className="dialogue-box font-snide-asides">
                 <img className="jenna-sprite" src={ JennaSpirte } />
