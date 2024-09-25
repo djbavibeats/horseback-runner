@@ -296,17 +296,17 @@ function InstructionsPage({ responsiveFactor }) {
     let floatDuration, maxHeight, baseHeight
     let counter = 0.0
     if (responsiveFactor === 1.0) {
-        baseSpeed = 3.5
+        baseSpeed = 3.8
         floatDuration = 12.0
         maxHeight = 100.0
         baseHeight = 190.0
     } else if (responsiveFactor === 1.5) {
-        baseSpeed = 3.5 * responsiveFactor
+        baseSpeed = 3.8 * responsiveFactor
         floatDuration = 12.0 / responsiveFactor
         maxHeight = 100.0 * responsiveFactor
         baseHeight = 190.0 * responsiveFactor
     } else if (responsiveFactor === 1.3) {
-        baseSpeed = 3.5 * responsiveFactor
+        baseSpeed = 3.8 * responsiveFactor
         floatDuration = 12.0 / responsiveFactor
         maxHeight = 100.0 * responsiveFactor
         baseHeight = 190.0 * responsiveFactor
@@ -557,10 +557,10 @@ function InstructionsPage({ responsiveFactor }) {
                     }
                     
                     if (checkBounds(cactusContainer.current.children[c], horse.current)) {
-                        // sound.current.stop()
-                        // app.stop()
+                        sound.current.stop()
+                        app.stop()
 
-                        // setInstructionsStep(3)
+                        setInstructionsStep(3)
                     }
 
                     if (cactusContainer.current.children[c].position.x < 0.0 && cactusContainer.current.children[c].passed === false) {
