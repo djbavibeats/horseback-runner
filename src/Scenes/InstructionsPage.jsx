@@ -297,17 +297,17 @@ function InstructionsPage({ responsiveFactor }) {
     let counter = 0.0
     if (responsiveFactor === 1.0) {
         baseSpeed = 3.8
-        floatDuration = 12.0
+        floatDuration = 14.0
         maxHeight = 100.0
         baseHeight = 190.0
     } else if (responsiveFactor === 1.5) {
         baseSpeed = 3.8 * responsiveFactor
-        floatDuration = 12.0 / responsiveFactor
+        floatDuration = 14.0 / responsiveFactor
         maxHeight = 100.0 * responsiveFactor
         baseHeight = 190.0 * responsiveFactor
     } else if (responsiveFactor === 1.3) {
         baseSpeed = 3.8 * responsiveFactor
-        floatDuration = 12.0 / responsiveFactor
+        floatDuration = 14.0 / responsiveFactor
         maxHeight = 100.0 * responsiveFactor
         baseHeight = 190.0 * responsiveFactor
     }
@@ -387,7 +387,7 @@ function InstructionsPage({ responsiveFactor }) {
                     var incrementer = 0.1
                     if (horse.current.position.y > maxHeight) {
                         // Decrease this number to speed up the ascent
-                        incrementer += (0.05 / responsiveFactor)
+                        incrementer += (0.03 / responsiveFactor)
                         // incrementer += 0.1
                         horse.current.position.y -= (1.0 / incrementer)
 
