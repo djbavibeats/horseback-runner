@@ -66,7 +66,8 @@ body {
     width: 327.59398px;
     /* width: 307px; */
     background-repeat: no-repeat;
-    background-size: contain;
+    /* background-size: contain; */
+    background-size: cover;
     padding: 1.75rem 1rem 0.0rem 1rem;
 }
 
@@ -84,7 +85,8 @@ body {
 /* Game Border Styles */
 .game-border {
     background-image: url('/public/images/game/rope-border.webp');
-    background-size: contain;
+    /* background-size: contain; */
+    background-size: cover;
     background-position: center center;
     aspect-ratio: 1650 / 1330;
     background-repeat: no-repeat;
@@ -161,7 +163,8 @@ body {
     aspect-ratio: 1430 / 1108;
     height: 90%;
     /* width: 90%; */
-    background-size: contain;
+    /* background-size: contain; */
+    background-size: cover;
     background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
