@@ -94,11 +94,11 @@ function InstructionsPage({ responsiveFactor }) {
             random = Math.round(Math.random())
             var cactus = new Sprite({
                 texture: random === 0 ? cactusTexture.current : pricklyTexture.current,
-                scale: random === 0 ? 0.085 * responsiveFactor : 0.08 * responsiveFactor
+                scale: random === 0 ? 0.0825 * responsiveFactor : 0.08 * responsiveFactor
             })
             cactus.position.set(
                 gameWidth + 50, 
-                random === 0 ? 190 * responsiveFactor : 204 * responsiveFactor
+                random === 0 ? 192 * responsiveFactor : 204 * responsiveFactor
             )
             cactus.moving = false
             cactus.passed = false
