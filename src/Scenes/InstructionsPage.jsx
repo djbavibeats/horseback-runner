@@ -2,6 +2,10 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { Application, Assets, Texture, Sprite, TilingSprite, AnimatedSprite, Container } from 'pixi.js'
 import { Howl } from 'howler'
 
+// Firebase
+import { db } from '../utils/firebase-configuration'
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from '@firebase/firestore'
+
 import JennaSpirte from '../../public/images/game/jenna-sprite.webp'
 import LifeCounterSprite from '../../public/images/sprites/lifecounter.webp'
 
@@ -54,6 +58,7 @@ let gameInProgress = false
 
 function InstructionsPage({ responsiveFactor }) {  
     const [ instructionsStep, setInstructionsStep ] = useState(0)
+    const [ leaderboardStep, setLeaderboardStep ] = useState(0)
     const domElement = useRef(null)
     const initialized = useRef(false)
     const [ app, setApp ] = useState( new Application() ) 
@@ -66,6 +71,120 @@ function InstructionsPage({ responsiveFactor }) {
     const sound = useRef(new Howl({
         src: [ '/audio/horseback-jenna-paulette.mp3' ]
     }))
+
+    const [ formFields, setFormFields ] = useState({
+        "initials"  : "",
+        "email"     : "",
+        "optin"     :  false
+    })
+    const [ formLoading, setFormLoading ] = useState(false)
+    const [ formError, setFormError ] = useState(false)
+    const [ formErrorText, setFormErrorText ] = useState("")
+    const [ highScores, setHighScores ] = useState([])
+    const ScoresCollectionRef = collection(db, "scores")
+    const [ winner, setWinner ] = useState(false)
+
+    const getScoresData = async (scoreId) => {
+        if (scoreId !== null) {
+            console.log(scoreId)
+        }
+        const data = await getDocs(ScoresCollectionRef)
+        var sortedScores = data.docs.map((elem) => ({
+            id: elem.id,
+            ...elem.data()
+        }))
+        sortedScores.sort((a, b) => {
+            return b.score - a.score
+        })
+
+        // Do I need this set state?
+        setHighScores(sortedScores)
+
+        return sortedScores
+    }
+
+    useEffect(() => {
+        getScoresData(null)
+    }, [])
+
+    // useEffect(() => {
+    //     if (highScores.length > 0) {
+    //         var sortedScores = highScores
+    //         sortedScores.sort((a, b) => {
+    //             return b.score - a.score
+    //         })
+    //         setHighScores(sortedScores)
+    //     }
+    // }, [ highScores ])
+
+    const createScoreAndSort = async (formFields) => {
+        let scoreId
+        return await addDoc(ScoresCollectionRef, { 
+            email: formFields.email,
+            initials: formFields.initials,
+            score: formFields.score
+        })
+            .then(async (resp) => {
+                console.log("Response", resp.id)
+                scoreId = resp.id
+                return await getScoresData(scoreId)
+                    .then((sortedScores) => {
+                        return { 
+                            sortedScores: sortedScores,
+                            scoreId: scoreId
+                        }
+                    })
+            })
+    }
+
+    const checkWinners = async (scoreId) => {
+        console.log("Checking your ID", scoreId)
+        let topFive = highScores.slice(0, 5)
+        const isWinner = topFive.filter(score => {
+            console.log("Top Five IDs", score.id)
+            score.id === scoreId
+        })
+        console.log("You a winner??", isWinner)
+    }
+
+    const submitForm = () => {
+        if (!formFields.initials || !formFields.email) {
+            alert("Please fill in all fields!")
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formFields.email)) {
+            alert("How to trigger")
+        } else {
+            setFormFields({ ...formFields, score: scorePoints })
+            let entry = {
+                email: formFields.email,
+                score: scorePoints,
+                initials: formFields.initials
+            }
+            setFormLoading(true)
+
+            // Create a new score
+            return createScoreAndSort(entry)
+                .then(( response ) => {
+                    let sortedScores = response.sortedScores
+                    let yourScoreId = response.scoreId
+                    let topFive = sortedScores.slice(0, 5)
+                    console.log(topFive)
+                    const isWinner = topFive.filter(score => {
+                        console.log(score.id)
+                        console.log(yourScoreId)
+                        return score.id === yourScoreId
+                    })
+                    console.log("Winner?", isWinner)
+                    if (isWinner.length > 0) {
+                        setWinner(true)
+                    } else {
+                        setWinner(false)
+                    }
+                    setHighScores(topFive)
+                    setFormLoading(false)
+                    setLeaderboardStep(1)
+                })
+        }
+    }
 
     let sunset = useRef(null)
     let mountains1 = useRef(null)
@@ -618,7 +737,9 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const restartGame = () => {
+        console.log("Restart")
         setInstructionsStep(0)
+        setLeaderboardStep(0)
 
         // Set horse back to starting position
         horse.current.position.x = (gameWidth / 2) - 32
@@ -659,6 +780,25 @@ function InstructionsPage({ responsiveFactor }) {
         return Array.from({ length: count }).map((_item, index) => <Life key={ index } />)
     }
 
+    const ScoreRow = ({ rank, initials, score }) => {
+        return (<>
+            <div className="col-span-1 text-left">
+                <p className="font-snide-asides text-lg">{ rank }</p>
+            </div>
+            <div className="col-span-1 text-center">
+                <p className="font-snide-asides text-lg uppercase">{ initials }</p>
+            </div>
+            <div className="col-span-1 text-right">
+                <p className="font-snide-asides text-lg">{ score }</p>
+            </div>
+        </>)
+    }
+    const renderScores = () => {
+        if (highScores.length > 0) {
+            return highScores.slice(0, 5).map((_item, index) => <ScoreRow key={ index } rank={ index + 1 } initials={ _item.initials } score={ _item.score } />)
+        }
+    }
+
     return (
         <>
         <div className="relative flex flex-col items-center gap-2">
@@ -666,7 +806,6 @@ function InstructionsPage({ responsiveFactor }) {
             <div className="absolute lifecounter top-4 left-4 w-[80px]">
                 <div className="flex justify-start gap-2">
                     <LivesCounter count={ lives } />
-                    {/* <p className="font-snide-asides text-xl">{ lives }</p> */}
                 </div>
             </div>
             <div className="absolute scorebox top-4 right-4 w-[80px]">
@@ -705,22 +844,64 @@ function InstructionsPage({ responsiveFactor }) {
             { instructionsStep === 3 && <>
             <div className={`absolute bg-white leaderboard-modal`}>
                 <div className="leaderboard-modal-content">
-                    <p className="font-snide-asides text-lg">Thanks for playing!</p>
-                    <div className="flex flex-col items-center mb-2">
-                        <p className="font-snide-asides text-lg">Score</p>
-                        <p className="font-snide-asides text-lg">{ scorePoints }</p>
-                    </div>
-                    <div className="flex flex-col items-center mb-2">
-                        <p className="font-snide-asides text-lg">Initials</p>
-                        <p className="font-snide-asides text-lg">ABC</p>
-                    </div>
-                    <div className="flex flex-col items-center mb-0">
-                        <p className="font-snide-asides text-lg">Email</p>
-                        <p className="font-snide-asides text-lg">your@email.com</p>
-                    </div>
-                    <div className="special-button w-[140px] mt-2" onClick={ () => restartGame() }>
-                        <p className="font-snide-asides text-md">View Leaderboard</p>
-                    </div>
+                    { leaderboardStep === 0 && <>
+                        <p className="font-snide-asides text-lg">Thanks for playing!</p>
+                        <form id="form-container" className="flex flex-col items-center">
+                            <div className="flex flex-col items-center mb-2">
+                                <p className="font-snide-asides text-lg">Score</p>
+                                <p className="font-snide-asides text-lg">{ scorePoints }</p>
+                            </div>
+                            <div className="flex flex-col items-center mb-2">
+                                <p className="font-snide-asides text-lg">Initials</p>
+                                <input 
+                                    required
+                                    name="initials"
+                                    type="text"
+                                    value={ formFields.initials }
+                                    onChange={ (e) => setFormFields({ ...formFields, initials: e.target.value })}
+                                    placeholder="ABC" 
+                                    maxLength="3"
+                                    className="font-snide-asides text-black bg-transparent text-center text-lg tracking-[0.125rem] uppercase" 
+                                />
+                            </div>
+                            <div className="flex flex-col items-center mb-0">
+                                <p className="font-snide-asides text-lg">Email</p>
+                                <input 
+                                    required
+                                    name="email"
+                                    type="email"
+                                    value={ formFields.email }
+                                    onChange={ (e) => setFormFields({ ...formFields, email: e.target.value })}
+                                    placeholder="your@email.com" 
+                                    className="font-snide-asides text-black bg-transparent text-center text-lg" 
+                                />
+                            </div>
+                            <div className="special-button w-[140px] mt-2" onClick={ submitForm }>
+                                <p className="font-snide-asides text-lg">View Leaderboard</p>
+                            </div>
+                        </form>
+                    </> }
+                    { leaderboardStep === 1 && <>
+                        <p className="font-snide-asides text-lg mb-2">{
+                            winner ? `Congrats! You made the top 5!`
+                            : `You didn't make the leaderboard`
+                        }</p>
+                        <div className="grid grid-cols-3 w-[90%]">
+                            <div className="col-span-1 text-left">
+                                <p className="font-snide-asides text-lg">Rank</p>
+                            </div>
+                            <div className="col-span-1 text-center">
+                                <p className="font-snide-asides text-lg">Initials</p>
+                            </div>
+                            <div className="col-span-1 text-right">
+                                <p className="font-snide-asides text-lg">Score</p>
+                            </div>
+                            { renderScores() }
+                        </div>
+                            <div className="special-button w-[140px] mt-2" onClick={ () => restartGame() }>
+                                <p className="font-snide-asides text-lg">Try again?</p>
+                            </div>
+                    </> }
                 </div>
             </div>
             <div className="min-h-[191.62px]">
