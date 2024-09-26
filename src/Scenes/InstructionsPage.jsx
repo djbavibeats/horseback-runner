@@ -114,7 +114,7 @@ function InstructionsPage({ responsiveFactor }) {
     const createCoin = async () => {
         coinContainer.current = new Container()
         var random = Math.random()
-        for (var i = 0; i < 10; ++i) {
+        for (var i = 0; i < 50; ++i) {
             var coin = new Sprite({
                 texture: coinTexture.current,
                 scale: 0.07
