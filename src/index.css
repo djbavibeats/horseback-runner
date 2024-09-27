@@ -183,6 +183,10 @@ body {
         height: 332.8px;
         width: 412.872174px;
     }
+
+    .leaderboard-modal-content {
+        justify-content: center;
+    }
 }
 
 @media screen and (min-width: 1024px) {

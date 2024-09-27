@@ -15,10 +15,16 @@ export default {
           '0%, 100%': { 
             transform: 'translateY(-5%)'
           },
+        },
+        spin: {
+          '40%': {
+            transform: 'rotate(180deg)'
+          }
         }
       },
       animation: {
-        bounce: 'bounce 0.75s ease-in-out infinite'
+        bounce: 'bounce 0.75s ease-in-out infinite',
+        spin: 'spin 5.0s ease-in-out infinite'
       }
     },
   },

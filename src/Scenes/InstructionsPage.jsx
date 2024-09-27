@@ -8,6 +8,7 @@ import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from '@firebas
 
 import JennaSpirte from '../../public/images/game/jenna-sprite.webp'
 import LifeCounterSprite from '../../public/images/sprites/lifecounter.webp'
+import LoadingIcon from '../../public/images/splash-page/loading-icon.webp'
 
 function keyboard(value) {
     const key = {}
@@ -67,6 +68,7 @@ function InstructionsPage({ responsiveFactor }) {
     const [ scorePoints, setScorePoints ] = useState(0)
     const [ scoreTime, setScoreTime ] = useState(0.0)
     const [ lives, setLives ] = useState(3.0)
+    const [ gameLoading, setGameLoading ] = useState(false)
 
     const sound = useRef(new Howl({
         src: [ '/audio/horseback-jenna-paulette.mp3' ]
@@ -250,6 +252,7 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const init = async () => {
+        setGameLoading(true)
         // Initialize the application
         await app.init({ 
             background: 0x000000, 
@@ -405,6 +408,7 @@ function InstructionsPage({ responsiveFactor }) {
            
         }).then(() => {
             console.log('loaded!')
+            setGameLoading(false)
             app.ticker.add((delta) => {
                 // Initialize game animations
                 gameLoop()
@@ -659,7 +663,6 @@ function InstructionsPage({ responsiveFactor }) {
                 }
                 console.log(lifeCounter)
                 if (lifeCounter === 0.0) {
-                    sound.current.stop()
                     app.stop()
                     setInstructionsStep(3)
                 }
@@ -738,6 +741,7 @@ function InstructionsPage({ responsiveFactor }) {
 
     const restartGame = () => {
         console.log("Restart")
+        sound.current.stop()
         setInstructionsStep(0)
         setLeaderboardStep(0)
 
@@ -762,6 +766,7 @@ function InstructionsPage({ responsiveFactor }) {
         space.current = null
 
         app.start()
+        sound.current.start()
     }
 
     const streamLink = () => {
@@ -783,13 +788,13 @@ function InstructionsPage({ responsiveFactor }) {
     const ScoreRow = ({ rank, initials, score }) => {
         return (<>
             <div className="col-span-1 text-left">
-                <p className="font-snide-asides text-lg">{ rank }</p>
+                <p className="font-snide-asides text-lg md:text-xl">{ rank }</p>
             </div>
             <div className="col-span-1 text-center">
-                <p className="font-snide-asides text-lg uppercase">{ initials }</p>
+                <p className="font-snide-asides text-lg uppercase md:text-xl">{ initials }</p>
             </div>
             <div className="col-span-1 text-right">
-                <p className="font-snide-asides text-lg">{ score }</p>
+                <p className="font-snide-asides text-lg md:text-xl">{ score }</p>
             </div>
         </>)
     }
@@ -801,7 +806,7 @@ function InstructionsPage({ responsiveFactor }) {
 
     return (
         <>
-        <div className="relative flex flex-col items-center gap-2">
+        <div className={`relative ${ gameLoading ? 'hidden' : 'flex' } flex-col items-center gap-2`}>
             <div className="absolute game-border" />
             <div className="absolute lifecounter top-4 left-4 w-[80px]">
                 <div className="flex justify-start gap-2">
@@ -845,14 +850,14 @@ function InstructionsPage({ responsiveFactor }) {
             <div className={`absolute bg-white leaderboard-modal`}>
                 <div className="leaderboard-modal-content">
                     { leaderboardStep === 0 && <>
-                        <p className="font-snide-asides text-lg">Thanks for playing!</p>
+                        <p className="font-snide-asides text-lg md:text-xl">Thanks for playing!</p>
                         <form id="form-container" className="flex flex-col items-center">
                             <div className="flex flex-col items-center mb-2">
-                                <p className="font-snide-asides text-lg">Score</p>
-                                <p className="font-snide-asides text-lg">{ scorePoints }</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Score</p>
+                                <p className="font-snide-asides text-lg md:text-xl">{ scorePoints }</p>
                             </div>
                             <div className="flex flex-col items-center mb-2">
-                                <p className="font-snide-asides text-lg">Initials</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Initials</p>
                                 <input 
                                     required
                                     name="initials"
@@ -861,11 +866,11 @@ function InstructionsPage({ responsiveFactor }) {
                                     onChange={ (e) => setFormFields({ ...formFields, initials: e.target.value })}
                                     placeholder="ABC" 
                                     maxLength="3"
-                                    className="font-snide-asides text-black bg-transparent text-center text-lg tracking-[0.125rem] uppercase" 
+                                    className="font-snide-asides text-black bg-transparent text-center text-lg md:text-xl tracking-[0.125rem] uppercase" 
                                 />
                             </div>
                             <div className="flex flex-col items-center mb-0">
-                                <p className="font-snide-asides text-lg">Email</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Email</p>
                                 <input 
                                     required
                                     name="email"
@@ -873,7 +878,7 @@ function InstructionsPage({ responsiveFactor }) {
                                     value={ formFields.email }
                                     onChange={ (e) => setFormFields({ ...formFields, email: e.target.value })}
                                     placeholder="your@email.com" 
-                                    className="font-snide-asides text-black bg-transparent text-center text-lg" 
+                                    className="font-snide-asides text-black bg-transparent text-center text-lg md:text-xl" 
                                 />
                             </div>
                             <div className="special-button w-[140px] mt-2" onClick={ submitForm }>
@@ -882,19 +887,19 @@ function InstructionsPage({ responsiveFactor }) {
                         </form>
                     </> }
                     { leaderboardStep === 1 && <>
-                        <p className="font-snide-asides text-lg mb-2">{
+                        <p className="font-snide-asides text-lg md:text-xl mb-2">{
                             winner ? `Congrats! You made the top 5!`
                             : `You didn't make the leaderboard`
                         }</p>
                         <div className="grid grid-cols-3 w-[90%]">
                             <div className="col-span-1 text-left">
-                                <p className="font-snide-asides text-lg">Rank</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Rank</p>
                             </div>
                             <div className="col-span-1 text-center">
-                                <p className="font-snide-asides text-lg">Initials</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Initials</p>
                             </div>
                             <div className="col-span-1 text-right">
-                                <p className="font-snide-asides text-lg">Score</p>
+                                <p className="font-snide-asides text-lg md:text-xl">Score</p>
                             </div>
                             { renderScores() }
                         </div>
@@ -917,6 +922,12 @@ function InstructionsPage({ responsiveFactor }) {
             </div>
             </> }
         </div>
+        { gameLoading === true &&
+        <div className="absolute w-full h-full flex items-center flex-col justify-center mt-52">
+            <img className="w-8 animate-spin" src={ LoadingIcon } />
+            <p className="font-snide-asides text-2xl mt-4">Loading...</p>
+        </div>
+        }
         </>
     )
 }
