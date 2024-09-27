@@ -88,7 +88,6 @@ function InstructionsPage({ responsiveFactor }) {
 
     const getScoresData = async (scoreId) => {
         if (scoreId !== null) {
-            console.log(scoreId)
         }
         const data = await getDocs(ScoresCollectionRef)
         var sortedScores = data.docs.map((elem) => ({
@@ -109,16 +108,6 @@ function InstructionsPage({ responsiveFactor }) {
         getScoresData(null)
     }, [])
 
-    // useEffect(() => {
-    //     if (highScores.length > 0) {
-    //         var sortedScores = highScores
-    //         sortedScores.sort((a, b) => {
-    //             return b.score - a.score
-    //         })
-    //         setHighScores(sortedScores)
-    //     }
-    // }, [ highScores ])
-
     const createScoreAndSort = async (formFields) => {
         let scoreId
         return await addDoc(ScoresCollectionRef, { 
@@ -127,7 +116,6 @@ function InstructionsPage({ responsiveFactor }) {
             score: formFields.score
         })
             .then(async (resp) => {
-                console.log("Response", resp.id)
                 scoreId = resp.id
                 return await getScoresData(scoreId)
                     .then((sortedScores) => {
@@ -140,13 +128,10 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const checkWinners = async (scoreId) => {
-        console.log("Checking your ID", scoreId)
         let topFive = highScores.slice(0, 5)
         const isWinner = topFive.filter(score => {
-            console.log("Top Five IDs", score.id)
             score.id === scoreId
         })
-        console.log("You a winner??", isWinner)
     }
 
     const submitForm = () => {
@@ -169,13 +154,10 @@ function InstructionsPage({ responsiveFactor }) {
                     let sortedScores = response.sortedScores
                     let yourScoreId = response.scoreId
                     let topFive = sortedScores.slice(0, 5)
-                    console.log(topFive)
+                
                     const isWinner = topFive.filter(score => {
-                        console.log(score.id)
-                        console.log(yourScoreId)
                         return score.id === yourScoreId
                     })
-                    console.log("Winner?", isWinner)
                     if (isWinner.length > 0) {
                         setWinner(true)
                     } else {
@@ -209,7 +191,14 @@ function InstructionsPage({ responsiveFactor }) {
     let coinContainer = useRef(null)
     
     let horse = useRef(null)    
+    let walkSprite = useRef(null)
+    let jumpSprite = useRef(null)
+    let walkTexturesRef = useRef(null)
+    let jumpTexturesRef = useRef(null)
     let space = useRef(null)
+
+    let birdSprite = useRef(null)
+    let littleBirdSprite = useRef(null)
 
     const createCactus = async () => {
         cactusContainer.current = new Container()
@@ -278,12 +267,32 @@ function InstructionsPage({ responsiveFactor }) {
         Assets.add({ alias: 'Cloud5', src: '/images/sprites/cloud-5.webp' })        
 
         // Horse
-        Assets.add({ alias: 'WalkFrame1', src: '/images/sprites/horse/walk/frame-1.webp' })
-        Assets.add({ alias: 'WalkFrame2', src: '/images/sprites/horse/walk/frame-2.webp' })
-        Assets.add({ alias: 'WalkFrame3', src: '/images/sprites/horse/walk/frame-3.webp' })
-        Assets.add({ alias: 'WalkFrame4', src: '/images/sprites/horse/walk/frame-4.webp' })
-        Assets.add({ alias: 'WalkFrame5', src: '/images/sprites/horse/walk/frame-5.webp' })
-        Assets.add({ alias: 'WalkFrame6', src: '/images/sprites/horse/walk/frame-6.webp' })
+        Assets.add({ alias: 'WalkFrame1', src: '/images/sprites/horse/walkv2/frame-1.png' })
+        Assets.add({ alias: 'WalkFrame2', src: '/images/sprites/horse/walkv2/frame-2.png' })
+        Assets.add({ alias: 'WalkFrame3', src: '/images/sprites/horse/walkv2/frame-3.png' })
+        Assets.add({ alias: 'WalkFrame4', src: '/images/sprites/horse/walkv2/frame-4.png' })
+        Assets.add({ alias: 'WalkFrame5', src: '/images/sprites/horse/walkv2/frame-5.png' })
+        Assets.add({ alias: 'WalkFrame6', src: '/images/sprites/horse/walkv2/frame-6.png' })
+
+        
+        Assets.add({ alias: 'JumpFrame1', src: '/images/sprites/horse/jump/jump-frame-1.png' })
+        Assets.add({ alias: 'JumpFrame2', src: '/images/sprites/horse/jump/jump-frame-2.png' })
+        Assets.add({ alias: 'JumpFrame3', src: '/images/sprites/horse/jump/jump-frame-3.png' })
+        Assets.add({ alias: 'JumpFrame4', src: '/images/sprites/horse/jump/jump-frame-4.png' })
+        Assets.add({ alias: 'JumpFrame5', src: '/images/sprites/horse/jump/jump-frame-5.png' })
+        Assets.add({ alias: 'JumpFrame6', src: '/images/sprites/horse/jump/jump-frame-6.png' })
+
+        // Bird
+        Assets.add({ alias: 'BirdFrame1', src: '/images/sprites/bird/bird-1.png' })
+        Assets.add({ alias: 'BirdFrame2', src: '/images/sprites/bird/bird-2.png' })
+        Assets.add({ alias: 'BirdFrame3', src: '/images/sprites/bird/bird-3.png' })
+        Assets.add({ alias: 'BirdFrame4', src: '/images/sprites/bird/bird-4.png' })
+
+        // Little Bird
+        Assets.add({ alias: 'LittleBirdFrame1', src: '/images/sprites/little-bird/little-bird-1.png' })
+        Assets.add({ alias: 'LittleBirdFrame2', src: '/images/sprites/little-bird/little-bird-2.png' })
+        Assets.add({ alias: 'LittleBirdFrame3', src: '/images/sprites/little-bird/little-bird-3.png' })
+        Assets.add({ alias: 'LittleBirdFrame4', src: '/images/sprites/little-bird/little-bird-4.png' })
 
         // Cactus
         Assets.add({ alias: 'Cactus', src: '/images/sprites/cactus.webp' })
@@ -299,6 +308,9 @@ function InstructionsPage({ responsiveFactor }) {
             'Mountains1', 'Mountains2', 'Mountains3', 'Mountains4',
             'Cloud1', 'Cloud2', 'Cloud3', 'Cloud4', 'Cloud5',
             'WalkFrame1', 'WalkFrame2', 'WalkFrame3', 'WalkFrame4', 'WalkFrame5', 'WalkFrame6', 
+            'JumpFrame1', 'JumpFrame2', 'JumpFrame3', 'JumpFrame4', 'JumpFrame5', 'JumpFrame6',
+            'BirdFrame1', 'BirdFrame2', 'BirdFrame3', 'BirdFrame4', 
+            'LittleBirdFrame1', 'LittleBirdFrame2', 'LittleBirdFrame3', 'LittleBirdFrame4', 
             'Cactus', 'Prickly',
             'Coin'
         ])
@@ -328,28 +340,33 @@ function InstructionsPage({ responsiveFactor }) {
             let cloudXOffset = gameWidth
             cloud1.current = new Sprite({ 
                 texture: textures.Cloud1, 
-                x: 0 - cloudXOffset, 
-                y: 40 
+                x: cloudXOffset, 
+                y: 40 * responsiveFactor,
+                scale: 0.75 * responsiveFactor 
             })
             cloud2.current = new Sprite({ 
                 texture: textures.Cloud2, 
-                x: 256 - cloudXOffset, 
-                y: 80 
+                x: cloudXOffset + 64, 
+                y: 80 * responsiveFactor,
+                scale: 0.75 * responsiveFactor
             })
             cloud3.current = new Sprite({ 
                 texture: textures.Cloud3, 
-                x: 512 - cloudXOffset, 
-                y: 50 
+                x: cloudXOffset + 128, 
+                y: 50 * responsiveFactor,
+                scale: 0.75 * responsiveFactor 
             })
             cloud4.current = new Sprite({ 
                 texture: textures.Cloud4, 
-                x: 640 - cloudXOffset, 
-                y: 30 
+                x: cloudXOffset + 256, 
+                y: 30 * responsiveFactor,
+                scale: 0.75 * responsiveFactor 
             })
             cloud5.current = new Sprite({ 
                 texture: textures.Cloud5, 
-                x: 768 - cloudXOffset, 
-                y: 100 
+                x: cloudXOffset + 324, 
+                y: 100 * responsiveFactor,
+                scale: 0.75 * responsiveFactor 
             })
 
             app.stage.addChild(cloud1.current)
@@ -363,7 +380,7 @@ function InstructionsPage({ responsiveFactor }) {
                 texture: textures.WireFence,
                 height: 256 * responsiveFactor,
                 width: 1024 * responsiveFactor,
-                tileScale: responsiveFactor
+                tileScale: responsiveFactor,
             })
             app.stage.addChild(wireFence.current)
 
@@ -378,26 +395,78 @@ function InstructionsPage({ responsiveFactor }) {
 
             // Horse
             const walkFrames = [
-                '/images/sprites/horse/walk/frame-1.webp', '/images/sprites/horse/walk/frame-2.webp', '/images/sprites/horse/walk/frame-3.webp',
-                '/images/sprites/horse/walk/frame-4.webp', '/images/sprites/horse/walk/frame-5.webp', '/images/sprites/horse/walk/frame-6.webp'
+                '/images/sprites/horse/walkv2/frame-1.png', '/images/sprites/horse/walkv2/frame-2.png', '/images/sprites/horse/walkv2/frame-3.png',
+                '/images/sprites/horse/walkv2/frame-4.png', '/images/sprites/horse/walkv2/frame-5.png', '/images/sprites/horse/walkv2/frame-6.png'
+            ]
+            const jumpFrames = [
+                '/images/sprites/horse/jump/jump-frame-1.png', '/images/sprites/horse/jump/jump-frame-2.png', '/images/sprites/horse/jump/jump-frame-3.png',
+                '/images/sprites/horse/jump/jump-frame-4.png', '/images/sprites/horse/jump/jump-frame-5.png', '/images/sprites/horse/jump/jump-frame-6.png'
             ]
             let textureArray = []
             for (const frame of walkFrames) {
                 const texture = Texture.from(frame)
                 textureArray.push(texture)
             }
+            walkTexturesRef.current = textureArray
 
-            const animatedSprite = new AnimatedSprite(textureArray)
-            animatedSprite.animationSpeed = 0.25
-            animatedSprite.position.y = 190 * responsiveFactor
-            animatedSprite.position.x = (gameWidth / 2) - 32
-            animatedSprite.scale = 0.5 * responsiveFactor
-            animatedSprite.play()
+            let jumpTextureArray = []
+            for (const jumpFrame of jumpFrames) {
+                const jumpTexture = Texture.from(jumpFrame)
+                jumpTextureArray.push(jumpTexture)
+            }
+            jumpTexturesRef.current = jumpTextureArray
 
-            horse.current = animatedSprite
+            walkSprite.current = new AnimatedSprite(walkTexturesRef.current)
+            jumpSprite.current = new AnimatedSprite(jumpTexturesRef.current)
+
+            const horseSprite = new AnimatedSprite(walkSprite.current.textures)
+            horseSprite.animationSpeed = 0.25
+            horseSprite.position.y = 195 * responsiveFactor
+            horseSprite.position.x = (gameWidth / 2) - 32
+            horseSprite.scale = 0.5 * responsiveFactor
+            horseSprite.play()
+
+            horse.current = horseSprite
             horse.current.jumpState = 'idle'
 
             app.stage.addChild(horse.current)  
+            
+            const birdFrames = [
+                '/images/sprites/bird/bird-1.png', '/images/sprites/bird/bird-2.png', '/images/sprites/bird/bird-3.png',
+                '/images/sprites/bird/bird-4.png'
+            ]
+            let birdTexturesArray = []
+            for (const birdFrame of birdFrames) {
+                const birdTexture = Texture.from(birdFrame)
+                birdTexturesArray.push(birdTexture)
+            }
+            
+            birdSprite.current = new AnimatedSprite(birdTexturesArray)
+            birdSprite.current.animationSpeed = 0.15
+            birdSprite.current.scale = 0.45 * responsiveFactor
+            // birdSprite.current.position.y = gameHeight / 2
+            birdSprite.current.position.x = -350.0
+            birdSprite.current.play()
+
+            app.stage.addChild(birdSprite.current)
+
+            const littleBirdFrames = [
+                '/images/sprites/little-bird/little-bird-1.png', '/images/sprites/little-bird/little-bird-2.png', '/images/sprites/little-bird/little-bird-3.png',
+                '/images/sprites/little-bird/little-bird-4.png'
+            ]
+            let littleBirdTexturesArray = []
+            for (const littleBirdFrame of littleBirdFrames) {
+                const littleBirdTexture = Texture.from(littleBirdFrame)
+                littleBirdTexturesArray.push(littleBirdTexture)
+            }
+            
+            littleBirdSprite.current = new AnimatedSprite(littleBirdTexturesArray)
+            littleBirdSprite.current.animationSpeed = 0.15
+            littleBirdSprite.current.scale = 0.45 * responsiveFactor
+            littleBirdSprite.current.position.x = -600.0
+            littleBirdSprite.current.play()
+
+            app.stage.addChild(littleBirdSprite.current)
 
             cactusTexture.current = textures.Cactus
             pricklyTexture.current = textures.Prickly
@@ -407,7 +476,6 @@ function InstructionsPage({ responsiveFactor }) {
             createCoin()
            
         }).then(() => {
-            console.log('loaded!')
             setGameLoading(false)
             app.ticker.add((delta) => {
                 // Initialize game animations
@@ -420,7 +488,7 @@ function InstructionsPage({ responsiveFactor }) {
     let count = 0
     let time = Date.now()
     let baseSpeed = 4.9 * responsiveFactor
-    let cloudSpeed = 1.15
+    let cloudSpeed = 0.75
     let cloudLoopOffset = 100.0  
     let timer = 0
 
@@ -431,19 +499,19 @@ function InstructionsPage({ responsiveFactor }) {
     let counter = 0.0
     if (responsiveFactor === 1.0) {
         baseSpeed = 3.8
-        floatDuration = 14.0
-        maxHeight = 100.0
-        baseHeight = 190.0
+        floatDuration = 13.0
+        maxHeight = 110.0
+        baseHeight = 195.0
     } else if (responsiveFactor === 1.5) {
         baseSpeed = 3.8 * responsiveFactor
-        floatDuration = 14.0 / responsiveFactor
-        maxHeight = 100.0 * responsiveFactor
-        baseHeight = 190.0 * responsiveFactor
+        floatDuration = 13.0 / responsiveFactor
+        maxHeight = 110.0 * responsiveFactor
+        baseHeight = 195.0 * responsiveFactor
     } else if (responsiveFactor === 1.3) {
         baseSpeed = 3.8 * responsiveFactor
-        floatDuration = 14.0 / responsiveFactor
-        maxHeight = 100.0 * responsiveFactor
-        baseHeight = 190.0 * responsiveFactor
+        floatDuration = 13.0 / responsiveFactor
+        maxHeight = 110.0 * responsiveFactor
+        baseHeight = 195.0 * responsiveFactor
     }
 
     // Scoreboard
@@ -463,6 +531,9 @@ function InstructionsPage({ responsiveFactor }) {
     let flickerRate = 20.0
     let flickerRateCounter = 0.0
 
+    let birdRandomFactor = 0.0
+    let littleBirdRandomFactor = 0.0
+
     const checkBounds = (object1, object2) => {
         const bounds1 = object1.getBounds()
         const bounds2 = object2.getBounds()
@@ -481,10 +552,10 @@ function InstructionsPage({ responsiveFactor }) {
         time = currentTime
 
         // Mountains Animation
-        mountains1.current.tilePosition.x -= 0.225 * baseSpeed
-        mountains2.current.tilePosition.x -= 0.200 * baseSpeed
-        mountains3.current.tilePosition.x -= 0.175 * baseSpeed
-        mountains4.current.tilePosition.x -= 0.150 * baseSpeed
+        mountains1.current.tilePosition.x -= 0.0300 * baseSpeed
+        mountains2.current.tilePosition.x -= 0.0200 * baseSpeed
+        mountains3.current.tilePosition.x -= 0.0175 * baseSpeed
+        mountains4.current.tilePosition.x -= 0.0100 * baseSpeed
 
         // Wirefence Animation
         wireFence.current.tilePosition.x -= 1.0 * baseSpeed
@@ -492,37 +563,57 @@ function InstructionsPage({ responsiveFactor }) {
         // Dirt Animation
         dirt.current.tilePosition.x -= 1.0 * baseSpeed
 
+        // Bird Animation
+        birdSprite.current.position.y = (Math.sin(time * 0.0025) * 3 * responsiveFactor) + (70 * responsiveFactor) + birdRandomFactor
+        birdSprite.current.position.x += 0.28
+        if (birdSprite.current.position.x >= gameWidth + 50.0) {
+            birdSprite.current.position.x = -700.0 * responsiveFactor
+            birdRandomFactor = Math.random() * 50
+        }
+
+        littleBirdSprite.current.position.y = (Math.sin(time * 0.0025) * 7 * responsiveFactor) + (100 * responsiveFactor) + littleBirdRandomFactor
+        littleBirdSprite.current.position.x += 0.19
+        if (littleBirdSprite.current.position.x >= gameWidth + 50.0) {
+            littleBirdSprite.current.position.x = -550.0 * responsiveFactor
+            littleBirdRandomFactor = Math.random() * 50
+        }
+
         // Clouds Animation
-        cloud1.current.position.y = Math.sin(deltaTime * 0.0025) * 10 + 40
-        cloud1.current.position.x >= gameWidth 
-            ? cloud1.current.position.x = -120.0 - cloudLoopOffset
-            : cloud1.current.position.x += 0.210 * cloudSpeed
+        cloud1.current.position.y = Math.sin(time * 0.00025) + (responsiveFactor * 40)
+        cloud1.current.position.x <= 0.0 - 200.0
+            ? cloud1.current.position.x = gameWidth
+            : cloud1.current.position.x -= 0.210 * cloudSpeed
 
-        cloud2.current.position.y = Math.sin(deltaTime * 0.0025) * 5 + 80
-        cloud2.current.position.x >= gameWidth 
-            ? cloud2.current.position.x = -98.0 - cloudLoopOffset
-            : cloud2.current.position.x += 0.125 * cloudSpeed
+        cloud2.current.position.y = Math.sin(time * 0.00025) * 2 + (responsiveFactor * 80)
+        cloud2.current.position.x <= 0.0 - 150.0 
+            ? cloud2.current.position.x = gameWidth + 98.0
+            : cloud2.current.position.x -= 0.125 * cloudSpeed
 
-        cloud3.current.position.y = Math.sin(deltaTime * 0.0025) * 7.5 + 50
-        cloud3.current.position.x >= gameWidth 
-            ? cloud3.current.position.x = -120.0 - cloudLoopOffset
-            : cloud3.current.position.x += 0.150 * cloudSpeed
+        cloud3.current.position.y = Math.sin(time * 0.00075) + (responsiveFactor * 50)
+        cloud3.current.position.x <= 0.0 - 250.0
+            ? cloud3.current.position.x = gameWidth + 120.0
+            : cloud3.current.position.x -= 0.150 * cloudSpeed
 
-        cloud4.current.position.y = Math.sin(deltaTime * 0.0025) * 6 + 10
-        cloud4.current.position.x >= gameWidth 
-            ? cloud4.current.position.x = -118.0 - cloudLoopOffset
-            : cloud4.current.position.x += 0.200 * cloudSpeed
+        cloud4.current.position.y = Math.sin(time * 0.00075) * 2 + (responsiveFactor * 10)
+        cloud4.current.position.x <= 0.0 - 100.0
+            ? cloud4.current.position.x = gameWidth + 118.0
+            : cloud4.current.position.x -= 0.200 * cloudSpeed
 
-        cloud5.current.position.y = Math.sin(deltaTime * 0.0025) * 9 + 100
-        cloud5.current.position.x >= gameWidth 
-            ? cloud5.current.position.x = -96.0 - cloudLoopOffset
-            : cloud5.current.position.x += 0.100 * cloudSpeed
+        cloud5.current.position.y = Math.sin(time * 0.0005) + (responsiveFactor * 100)
+        cloud5.current.position.x <= 0.0 - 300.0
+            ? cloud5.current.position.x = gameWidth + 96.0 + cloudLoopOffset
+            : cloud5.current.position.x -= 0.100 * cloudSpeed
 
         // Coin Hover Animation
         for (let j = 0; j < coinContainer.current.children.length; j++) {
             coinContainer.current.children[j].position.y -= Math.sin(time * 0.005) * 0.125
         }
 
+        if (horse.current.jumpState === 'idle') {
+            // horse.current.textures = walkTexturesRef.current
+            // horse.current.animationSpeed = 0.25
+            // horse.current.play()
+        }
         // Check if player has pressed "Start"
         if (gameInProgress == true) {
             // Setup Keyboard
@@ -530,13 +621,18 @@ function InstructionsPage({ responsiveFactor }) {
             space.current.press = () => {
                 if (horse.current.jumpState === 'idle') {
                     horse.current.jumpState = 'ascend'
+                    horse.current.gotoAndStop(5)
+                    horse.current.textures = jumpSprite.current.textures
+                    horse.current.animationSpeed = 0.155
+                    horse.current.loop = false
+                    horse.current.play()
                 }
             }
 
             // Move horse from center to starting position
             if (horse.current.position.x >= 10) {
                 horse.current.position.x -= (1.0 * responsiveFactor)
-                horse.current.position.y = 190 * responsiveFactor
+                horse.current.position.y = 195 * responsiveFactor
             } else {
 
                 // If the horse is in the Ascent state
@@ -546,7 +642,7 @@ function InstructionsPage({ responsiveFactor }) {
                     var incrementer = 0.1
                     if (horse.current.position.y > maxHeight) {
                         // Decrease this number to speed up the ascent
-                        incrementer += (0.03 / responsiveFactor)
+                        incrementer += (0.035 / responsiveFactor)
                         horse.current.position.y -= (1.0 / incrementer)
 
                     // If the horse has reached its max height, briefly pause, then go down
@@ -568,18 +664,22 @@ function InstructionsPage({ responsiveFactor }) {
                     if (horse.current.position.y < baseHeight) {
                         decrementer += 1.0
                         // Increase first parameter of Math.pow to speed up descent
-                        horse.current.position.y += Math.pow((3.5 * responsiveFactor), decrementer)
+                        horse.current.position.y += Math.pow((3.55 * responsiveFactor), decrementer)
 
                     // If the horse has reached its base height, stay idle
                     } else {
                         decrementer = 0.1
                         horse.current.jumpState = 'idle'
+                        horse.current.textures = walkTexturesRef.current
+                        horse.current.animationSpeed = 0.25
+                        horse.current.play()
+                        horse.current.loop = true
                     } 
                 }
 
                 // Ensure the horse is on the ground when not jumping. Prevent clipping.
                 if (horse.current.jumpState === 'idle') {
-                    horse.current.position.y = 190 * responsiveFactor
+                    horse.current.position.y = 195 * responsiveFactor
                 }
 
                 // Cactus Sending Logic
@@ -596,7 +696,6 @@ function InstructionsPage({ responsiveFactor }) {
                         cactusCount += 1
                         cactusContainer.current.children[cactusCount].skip = true
                         cactusInterval -= 75.0
-                        console.log("Speed up: " + cactusInterval)
                         coinContainer.current.children[coinCount].moving = true
                         coinCount += 1
                     } else {
@@ -661,7 +760,6 @@ function InstructionsPage({ responsiveFactor }) {
                         horse.current.tint = 0xffffff
                     }
                 }
-                console.log(lifeCounter)
                 if (lifeCounter === 0.0) {
                     app.stop()
                     setInstructionsStep(3)
@@ -701,7 +799,6 @@ function InstructionsPage({ responsiveFactor }) {
                 gameInProgress = true
                 break
             case 3:
-                console.log("my turn")
                 break
             default:
                 break
@@ -729,25 +826,28 @@ function InstructionsPage({ responsiveFactor }) {
         if (scoreTime === 212) {
             gameInProgress = false
             setInstructionsStep(3)
-            console.log("You win!")
         }
     }, [scoreTime ])
 
     const jump = () => {
         if (horse.current.jumpState === 'idle') {
             horse.current.jumpState = 'ascend'
+            horse.current.gotoAndStop(5)
+            horse.current.textures = jumpSprite.current.textures
+            horse.current.animationSpeed = 0.155
+            horse.current.loop = false
+            horse.current.play()
         }
     }
 
     const restartGame = () => {
-        console.log("Restart")
         sound.current.stop()
         setInstructionsStep(0)
         setLeaderboardStep(0)
 
         // Set horse back to starting position
         horse.current.position.x = (gameWidth / 2) - 32
-        horse.current.position.y = 190 * responsiveFactor
+        horse.current.position.y = 195 * responsiveFactor
 
         // Set score and time to zero
         setScoreTime(0)
@@ -766,7 +866,7 @@ function InstructionsPage({ responsiveFactor }) {
         space.current = null
 
         app.start()
-        sound.current.start()
+        sound.current.play()
     }
 
     const streamLink = () => {
