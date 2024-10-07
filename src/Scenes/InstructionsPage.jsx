@@ -795,6 +795,7 @@ function InstructionsPage({ responsiveFactor }) {
                 break
             case 1:
                 setInstructionsStep(2)
+                console.log("Starting song")
                 sound.current.play()
                 gameInProgress = true
                 break
@@ -841,6 +842,7 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const restartGame = () => {
+        console.log("Stopping song.")
         sound.current.stop()
         setInstructionsStep(0)
         setLeaderboardStep(0)
@@ -864,9 +866,15 @@ function InstructionsPage({ responsiveFactor }) {
         setLives(3.0)
 
         space.current = null
+        
 
         app.start()
-        sound.current.play()
+        setInstructionsStep(2)
+        setTimeout(() => {
+            gameInProgress = true
+            sound.current.play()
+        }, 250)
+        // sound.current.play()
     }
 
     const streamLink = () => {

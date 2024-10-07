@@ -4,9 +4,9 @@ import ShareIcon from "../public/images/navbar/ShareIcon.webp"
 function Navbar () {
     async function share() {
         const shareData = {
-            title: "Site Title",
-            text: "Site description.",
-            url: "https://voltcreative.com/",
+            title: "Jenna Paulette - Horseback",
+            text: "Jump over some stuff and win a pair of Justin Boots!",
+            url: "https://horseback-runner.netlify.app/",
         }
 
         if (navigator.share && navigator.canShare(shareData)) {
@@ -25,7 +25,7 @@ function Navbar () {
     }
 
     function openMenu() {
-        window.open('#', '_blank')
+        window.open('https://jennapaulette.komi.io', '_blank')
     }
 
     return (
