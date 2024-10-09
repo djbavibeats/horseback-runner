@@ -881,8 +881,25 @@ function InstructionsPage({ responsiveFactor }) {
         alert("Stream")
     }
 
-    const shareLink = () => {
-        alert("Share")
+    const shareLink = async () => {
+        const shareData = {
+            title: "Jenna Paulette - Horseback",
+            text: "Jump over some stuff and collect some coins and you might be lucky enough to ride away with a free pair of Justin Boots!",
+            url: "https://horseback-runner.netlify.app/",
+        }
+
+        if (navigator.share && navigator.canShare(shareData)) {
+            try {
+                await navigator.share(shareData);
+                console.log("Shared successfully")
+            } catch (err) {
+                console.log(`Error: ${err}`)
+            }
+        } else {
+            // do something else like copying the data to the clipboard
+            console.log(`Can't share in this browser`)
+            alert("Sharing is not enabled in this browser")
+        }
     }
 
     const Life = ({ index }) => {
