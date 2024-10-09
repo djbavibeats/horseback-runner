@@ -937,10 +937,10 @@ function InstructionsPage({ responsiveFactor }) {
                 <img className="jenna-sprite" src={ JennaSpirte } />
                 { instructionsStep === 0 && <>
                     <p className="mb-2">Hey y'all!</p>
-                    <p>Country music's favorite cowgirl Jenna Paulette here. Jump over some stuff and win a pair of Justin Boots, ya hear? Make it to the end of my new single "Horseback" to be entered to win!</p>
+                    <p>Jenna Paulette here! Do you want a free pair of Justin Boots? Jump over some stuff and collect some coins and you might be lucky to ride away with a pair!</p>
                 </> }
                 { instructionsStep === 1 && <>
-                    <p className="mt-4">Hit the spacebar or jump button to control the horse. Turn up the volume, watch out for cactus and grab as many coins as you can. Have fun!</p>
+                    <p className="mt-4">Hit the spacebar or jump button to control the horse. Turn up the volume, watch out for cacti and grab as many coins as you can. Have fun!</p>
                 </> }
             </div>
             <div className="special-button w-[120px] mt-0 animate-bounce" onClick={ () => advanceStep() }>
