@@ -5,7 +5,7 @@ function Navbar () {
     async function share() {
         const shareData = {
             title: "Jenna Paulette - Horseback",
-            text: "Jump over some stuff and win a pair of Justin Boots!",
+            text: "Jump over some stuff and collect some coins and you might be lucky enough to ride away with a free pair of Justin Boots!",
             url: "https://horseback-runner.netlify.app/",
         }
 
