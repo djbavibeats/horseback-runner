@@ -15,7 +15,6 @@ function Navbar () {
                 console.log("Shared successfully")
             } catch (err) {
                 console.log(`Error: ${err}`)
-                alert("Error")
             }
         } else {
             // do something else like copying the data to the clipboard
