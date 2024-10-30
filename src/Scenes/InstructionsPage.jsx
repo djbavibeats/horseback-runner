@@ -113,7 +113,8 @@ function InstructionsPage({ responsiveFactor }) {
         return await addDoc(ScoresCollectionRef, { 
             email: formFields.email,
             initials: formFields.initials,
-            score: formFields.score
+            score: formFields.score,
+            optin: formFields.optin
         })
             .then(async (resp) => {
                 scoreId = resp.id
@@ -144,7 +145,8 @@ function InstructionsPage({ responsiveFactor }) {
             let entry = {
                 email: formFields.email,
                 score: scorePoints,
-                initials: formFields.initials
+                initials: formFields.initials,
+                optin: formFields.optin
             }
             setFormLoading(true)
 
@@ -795,7 +797,6 @@ function InstructionsPage({ responsiveFactor }) {
                 break
             case 1:
                 setInstructionsStep(2)
-                console.log("Starting song")
                 sound.current.play()
                 gameInProgress = true
                 break
@@ -842,7 +843,6 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const restartGame = () => {
-        console.log("Stopping song.")
         sound.current.stop()
         setInstructionsStep(0)
         setLeaderboardStep(0)
@@ -881,25 +881,88 @@ function InstructionsPage({ responsiveFactor }) {
         alert("Stream")
     }
 
-    const shareLink = async () => {
-        const shareData = {
-            title: "Jenna Paulette - Horseback",
-            text: "Jump over some stuff and collect some coins and you might be lucky enough to ride away with a free pair of Justin Boots!",
-            url: "https://horseback-runner.netlify.app/",
-        }
+    const mergeImageURIs = async (images) => {
+        return new Promise((resolve, reject) => {
+            var canvas = document.createElement('canvas')
+            canvas.width = 540
+            canvas.height = 960
+            Promise.all(images.map((imageObj, index) => add2Canvas(canvas, imageObj)))
+                .then(() => {
+                    resolve(canvas.toDataURL('image/png'), reject)
+                })
+        })
+    }
 
-        if (navigator.share && navigator.canShare(shareData)) {
-            try {
-                await navigator.share(shareData);
-                console.log("Shared successfully")
-            } catch (err) {
-                console.log(`Error: ${err}`)
+    const add2Canvas = (canvas, imageObj) => {
+        return new Promise((resolve, reject) => {
+            if (!imageObj || typeof imageObj != 'object') return reject()
+            var x = imageObj.x && canvas.width ? (imageObj.x >= 0 ? imageObj.x : canvas.width + imageObj.x) : 0
+            var y = imageObj.y && canvas.height ? (imageObj.y >= 0 ? imageObj.y : canvas.height + imageObj.y) : 0
+            var image = new Image()
+            image.onload = function() {
+                canvas.getContext('2d').drawImage(this, x, y, imageObj.width, imageObj.height)
+
+                canvas.getContext('2d').font = "32px Snide Asides"
+                canvas.getContext('2d').textAlign = 'center'
+                canvas.getContext('2d').fillText(`${formFields.initials.toUpperCase()}`, 265, 455)
+
+                canvas.getContext('2d').font = "32px Snide Asides"
+                canvas.getContext('2d').fillText(`${scorePoints}`, 265, 530)
+
+                resolve()
             }
-        } else {
-            // do something else like copying the data to the clipboard
-            console.log(`Can't share in this browser`)
-            alert("Sharing is not enabled in this browser")
+            image.src = imageObj.src
+        })
+    }
+
+    function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(","),
+            mimeType = arr[0].match(/:(.*?);/)[1],
+            decodedData = atob(arr[1]),
+            lengthOfDecodedData = decodedData.length,
+            u8array = new Uint8Array(lengthOfDecodedData)
+        while (lengthOfDecodedData--) {
+            u8array[lengthOfDecodedData] = decodedData.charCodeAt(lengthOfDecodedData)
         }
+        return new File([u8array], filename, { type: mimeType })
+    }
+
+
+    const shareLink = async () => {
+        var scoreTemplate = new Image()
+        scoreTemplate.src = '/horseback-scorecard.webp'
+
+        var images = [
+            { src: scoreTemplate.src, x: 0, y: 0, width: 540, height: 960 }
+        ]
+
+        mergeImageURIs(images)
+            .then(async resp => {
+                const shareImage = new Image
+                shareImage.src = resp
+
+                const file = [ dataURLtoFile(shareImage.src, `horseback-scorecard.png`) ]
+                const shareData = {
+                    title: "Jenna Paulette - Horseback",
+                    text: "Jump over some stuff and collect some coins and you might be lucky enough to ride away with a free pair of Justin Boots!",
+                    url: "https://horseback-runner.netlify.app/",
+                    files: file
+                }
+        
+                if (navigator.share && navigator.canShare(shareData)) {
+                    try {
+                        await navigator.share(shareData)
+                    } catch (err) {
+                        console.log(`Error: ${err}`)
+                    }
+                } else {
+                    // do something else like copying the data to the clipboard
+                    alert("Sharing is not enabled in this browser")
+                }
+            })
+        
+        
+
     }
 
     const Life = ({ index }) => {
@@ -994,16 +1057,29 @@ function InstructionsPage({ responsiveFactor }) {
                                     className="font-snide-asides text-black bg-transparent text-center text-lg md:text-xl tracking-[0.125rem] uppercase" 
                                 />
                             </div>
-                            <div className="flex flex-col items-center mb-0">
+                            <div className="flex flex-col items-center mb-2">
                                 <p className="font-snide-asides text-lg md:text-xl">Email</p>
                                 <input 
                                     required
                                     name="email"
                                     type="email"
                                     value={ formFields.email }
-                                    onChange={ (e) => setFormFields({ ...formFields, email: e.target.value })}
+                                    onChange={ (e) => setFormFields({ ...formFields, email: e.target.value }) }
                                     placeholder="your@email.com" 
                                     className="font-snide-asides text-black bg-transparent text-center text-lg md:text-xl" 
+                                />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <p className="font-snide-asides text-sm md:text-xl">Subscribe to Jenna Paulette's Newsletter</p>
+                                <input 
+                                    name="consent"
+                                    value={ formFields.optin }
+                                    checked={ formFields.optin }
+                                    type="checkbox"
+                                    className="w-6 h-6 border-2 outline-4 bg-red-500"
+                                    onChange={ (e) => {
+                                        setFormFields({ ...formFields, optin: !formFields.optin})
+                                    }}
                                 />
                             </div>
                             <div className="special-button w-[140px] mt-2" onClick={ submitForm }>

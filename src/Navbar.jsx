@@ -3,10 +3,19 @@ import ShareIcon from "../public/images/navbar/ShareIcon.webp"
 
 function Navbar () {
     async function share() {
+        const blob = await fetch('/horseback-socialcard.webp')
+            .then(r => r.blob())
+        
+
         const shareData = {
             title: "Jenna Paulette - Horseback",
             text: "Jump over some stuff and collect some coins and you might be lucky enough to ride away with a free pair of Justin Boots!",
             url: "https://horseback-runner.netlify.app/",
+            files: [
+                new File([blob], 'horseback-socialcard.webp', {
+                    type: blob.type
+                })
+            ]
         }
 
         if (navigator.share && navigator.canShare(shareData)) {
