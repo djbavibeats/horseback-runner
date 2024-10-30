@@ -1040,11 +1040,11 @@ function InstructionsPage({ responsiveFactor }) {
                     { leaderboardStep === 0 && <>
                         <p className="font-snide-asides text-lg md:text-xl">Thanks for playing!</p>
                         <form id="form-container" className="flex flex-col items-center">
-                            <div className="flex flex-col items-center mb-2">
+                            <div className="flex flex-col items-center mb-0 md:mb-2">
                                 <p className="font-snide-asides text-lg md:text-xl">Score</p>
                                 <p className="font-snide-asides text-lg md:text-xl">{ scorePoints }</p>
                             </div>
-                            <div className="flex flex-col items-center mb-2">
+                            <div className="flex flex-col items-center mb-0 md:mb-2">
                                 <p className="font-snide-asides text-lg md:text-xl">Initials</p>
                                 <input 
                                     required
@@ -1057,7 +1057,7 @@ function InstructionsPage({ responsiveFactor }) {
                                     className="font-snide-asides text-black bg-transparent text-center text-lg md:text-xl tracking-[0.125rem] uppercase" 
                                 />
                             </div>
-                            <div className="flex flex-col items-center mb-2">
+                            <div className="flex flex-col items-center mb-0 md:mb-2">
                                 <p className="font-snide-asides text-lg md:text-xl">Email</p>
                                 <input 
                                     required
@@ -1082,7 +1082,7 @@ function InstructionsPage({ responsiveFactor }) {
                                     }}
                                 />
                             </div>
-                            <div className="special-button w-[140px] mt-2" onClick={ submitForm }>
+                            <div className="special-button w-[140px] mt-0" onClick={ submitForm }>
                                 <p className="font-snide-asides text-lg">View Leaderboard</p>
                             </div>
                         </form>
