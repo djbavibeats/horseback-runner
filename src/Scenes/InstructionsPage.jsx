@@ -878,7 +878,7 @@ function InstructionsPage({ responsiveFactor }) {
     }
 
     const streamLink = () => {
-        alert("Stream")
+        window.open('https://leo33.lnk.to/horsebackfc', '_blank')
     }
 
     const mergeImageURIs = async (images) => {
