@@ -71,7 +71,7 @@ function InstructionsPage({ responsiveFactor }) {
     const [ gameLoading, setGameLoading ] = useState(false)
 
     const sound = useRef(new Howl({
-        src: [ '/audio/horseback-jenna-paulette.mp3' ]
+        src: [ '/audio/the-dirt.mp3' ]
     }))
 
     const [ formFields, setFormFields ] = useState({
@@ -825,7 +825,7 @@ function InstructionsPage({ responsiveFactor }) {
     }, [ instructionsStep ])
 
     useEffect(() => {
-        if (scoreTime === 212) {
+        if (scoreTime === 181) {
             gameInProgress = false
             setInstructionsStep(3)
         }
